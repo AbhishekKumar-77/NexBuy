@@ -137,8 +137,22 @@
                         @endif
                     </div>
                     @if($pIsBest)
-                    <span class="badge badge-accent">Best</span>
+                    <span class="badge badge-accent" style="margin-right: 10px;">Best</span>
                     @endif
+                    <div style="text-align:right;">
+                        @php
+                            $buyUrl = match($pKey) {
+                                'gem' => 'https://gem.gov.in/search?q=' . urlencode($product->name),
+                                'amazon' => 'https://www.amazon.in/s?k=' . urlencode($product->name) . '&tag=nexbuy-21',
+                                'flipkart' => 'https://www.flipkart.com/search?q=' . urlencode($product->name) . '&affid=nexbuy',
+                                default => 'https://dir.indiamart.com/search.mp?ss=' . urlencode($product->name)
+                            };
+                            $btnLabel = $pKey === 'gem' ? 'Procure' : 'Buy Now';
+                        @endphp
+                        <a href="{{ $buyUrl }}" target="_blank" class="btn btn-sm" style="background:{{ $pColor }}; color:white; border:none; padding: 0.4rem 0.8rem; border-radius: 4px; text-decoration:none; font-weight: 600; font-size: 0.75rem; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
+                            {{ $btnLabel }} ↗
+                        </a>
+                    </div>
                 </div>
                 @endif
                 @endforeach
