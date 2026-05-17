@@ -341,8 +341,11 @@
         <div class="nav-links">
             <a href="{{ route('search') }}" class="nav-link {{ request()->routeIs('search') ? 'active' : '' }}">🔍 Compare</a>
             <a href="{{ route('tco') }}" class="nav-link {{ request()->routeIs('tco') ? 'active' : '' }}">💰 TCO Calc</a>
-            <a href="{{ route('anomalies') }}" class="nav-link {{ request()->routeIs('anomalies') ? 'active' : '' }}">🚨 Fraud Alerts</a>
+            <a href="{{ route('anomalies') }}" class="nav-link {{ request()->routeIs('anomalies') ? 'active' : '' }}">🚨 Alerts</a>
             <a href="{{ route('watchlist') }}" class="nav-link {{ request()->routeIs('watchlist') ? 'active' : '' }}">👁 Watchlist</a>
+            <a href="{{ route('ai.matcher') }}" class="nav-link {{ request()->routeIs('ai.matcher') ? 'active' : '' }}" style="color: var(--primary-light);">🤖 AI Matcher</a>
+            <a href="{{ route('ai.rfp') }}" class="nav-link {{ request()->routeIs('ai.rfp') ? 'active' : '' }}">📄 Auto-RFP</a>
+            <a href="{{ route('ai.ocr') }}" class="nav-link {{ request()->routeIs('ai.ocr') ? 'active' : '' }}">📸 OCR</a>
         </div>
     </div>
 </nav>
@@ -369,6 +372,31 @@
     </p>
 </footer>
 
+<script>
+    // Theme Toggle Logic
+    const themeBtn = document.createElement('button');
+    themeBtn.innerHTML = '🌓 Toggle Theme';
+    themeBtn.style.cssText = 'position:fixed;bottom:20px;left:20px;z-index:9999;padding:10px 15px;background:var(--primary);color:white;border:none;border-radius:50px;cursor:pointer;font-family:Inter;font-weight:bold;box-shadow:0 4px 12px rgba(0,0,0,0.3);';
+    document.body.appendChild(themeBtn);
+
+    let isDark = true;
+    themeBtn.addEventListener('click', () => {
+        isDark = !isDark;
+        if(isDark) {
+            document.documentElement.style.setProperty('--bg', '#0a0a14');
+            document.documentElement.style.setProperty('--bg2', '#12121f');
+            document.documentElement.style.setProperty('--bg3', '#1a1a2e');
+            document.documentElement.style.setProperty('--text', '#e8e8f0');
+            document.documentElement.style.setProperty('--border', 'rgba(255,255,255,0.08)');
+        } else {
+            document.documentElement.style.setProperty('--bg', '#f8f9fa');
+            document.documentElement.style.setProperty('--bg2', '#ffffff');
+            document.documentElement.style.setProperty('--bg3', '#f1f3f5');
+            document.documentElement.style.setProperty('--text', '#212529');
+            document.documentElement.style.setProperty('--border', 'rgba(0,0,0,0.1)');
+        }
+    });
+</script>
 @yield('scripts')
 </body>
 </html>

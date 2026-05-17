@@ -153,6 +153,23 @@
                             </div>
                         </div>
                         @endif
+                        @if(isset($tco['advanced_total']))
+                        <div>
+                            <div style="display:flex;justify-content:space-between;margin-bottom:0.25rem;">
+                                <span class="text-muted">Lifecycle Energy Cost</span>
+                                <span class="font-semibold" style="color:var(--danger);">+₹{{ number_format($tco['energy_cost'], 0) }}</span>
+                            </div>
+                        </div>
+                        <div>
+                            <div style="display:flex;justify-content:space-between;margin-bottom:0.25rem;">
+                                <span class="text-muted">Est. Salvage Value</span>
+                                <span class="font-semibold" style="color:var(--success);">-₹{{ number_format($tco['salvage_value'], 0) }}</span>
+                            </div>
+                        </div>
+                        <div style="grid-column: 1 / -1; margin-top: 10px; padding: 10px; background: rgba(108,99,255,0.1); border-radius: 6px; text-align: center; font-weight: bold;">
+                            Advanced Total Ownership Cost: <span style="color: var(--primary);">₹{{ number_format($tco['advanced_total'], 0) }}</span>
+                        </div>
+                        @endif
                     </div>
                 </div>
             </div>

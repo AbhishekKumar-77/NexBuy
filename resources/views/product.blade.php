@@ -41,6 +41,21 @@
                 <p style="margin-top:0.5rem;font-size:0.75rem;color:var(--text-muted);">Is GeM a better value vs market?</p>
             </div>
             @endif
+
+            <!-- Vendor Trust Score -->
+            @php $trust = $product->vendor_trust_score; @endphp
+            <div style="margin-top:1rem;background:var(--bg2);border:1px solid var(--border);border-left:4px solid {{ $trust['color'] }};border-radius:var(--radius);padding:1.25rem;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
+                    <div style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;font-weight:700;">🛡️ Vendor Trust Score</div>
+                    <div style="font-size:1.5rem;font-weight:900;color:{{ $trust['color'] }}">{{ $trust['score'] }}/100</div>
+                </div>
+                <div style="font-size:0.85rem;font-weight:600;color:var(--text);margin-bottom:0.75rem;">{{ $trust['label'] }}</div>
+                <ul style="padding-left:1rem;margin:0;font-size:0.8rem;color:var(--text-muted);">
+                    @foreach($trust['details'] as $detail)
+                        <li>{{ $detail }}</li>
+                    @endforeach
+                </ul>
+            </div>
         </div>
 
         <!-- Details -->
@@ -82,6 +97,19 @@
                         <button type="submit" class="btn btn-ghost btn-sm">👁 Watch Price</button>
                     </form>
                     <a href="{{ route('cs.report', ['ids' => $product->id]) }}" class="btn btn-ghost btn-sm">📋 CS Report</a>
+                </div>
+            </div>
+
+            <!-- AI Price Prediction Banner -->
+            <div style="background:var(--bg3); border-left: 4px solid {{ $product->price_prediction['color'] }}; border-radius:var(--radius-sm); padding:1rem 1.25rem; margin-bottom:1.25rem; display:flex; align-items:flex-start; gap:1rem;">
+                <div style="font-size: 1.5rem;">{{ $product->price_prediction['icon'] }}</div>
+                <div>
+                    <div style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.2rem; font-weight:700;">
+                        NexBuy AI Insights · Predict & Save
+                    </div>
+                    <div style="font-size:0.9rem; color: var(--text);">
+                        {{ $product->price_prediction['message'] }}
+                    </div>
                 </div>
             </div>
 

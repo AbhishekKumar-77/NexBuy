@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "NexBuy Procurement Assistant",
+  "version": "1.0.0",
+  "description": "Injects NexBuy price comparisons directly into GeM product pages.",
+  "permissions": ["activeTab", "scripting"],
+  "host_permissions": ["*://*.gem.gov.in/*"],
+  "content_scripts": [
+    {
+      "matches": ["*://mkp.gem.gov.in/*"],
+      "js": ["content.js"],
+      "css": ["style.css"]
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "NexBuy"
+  }
+}
