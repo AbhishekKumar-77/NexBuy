@@ -291,94 +291,185 @@ class ProductController extends Controller
         return view('anomalies', compact('products', 'counterfeitRisk'));
     }
 
-    /** Fetch realistic mock data from an external API (DummyJSON) */
+    /** Fetch realistic product data when a search term has no local results */
     private function simulateExternalFetch(string $query)
     {
-        try {
-            // Fetch real-looking product data from a free dummy API
-            $response = \Illuminate\Support\Facades\Http::get("https://dummyjson.com/products/search?q=" . urlencode($query));
-            
-            if ($response->successful() && !empty($response->json('products'))) {
-                $products = array_slice($response->json('products'), 0, 3); // Get top 3
-                
-                foreach ($products as $apiProduct) {
-                    // Convert USD to INR (approximate 83 INR per USD)
-                    $basePriceInr = $apiProduct['price'] * 83;
-                    
-                    Product::create([
-                        'name' => $apiProduct['title'],
-                        'brand' => $apiProduct['brand'] ?? 'Generic',
-                        'category' => $apiProduct['category'] ?? 'Electronics',
-                        'description' => $apiProduct['description'],
-                        'image_url' => $apiProduct['thumbnail'], // Real Image URL
-                        'gem_price' => round($basePriceInr * 1.05), // GeM usually slightly higher/lower
-                        'gem_seller' => 'GeM Verified Vendor ' . rand(1, 100),
-                        'gem_bis_certified' => true,
-                        'gem_make_in_india' => (bool)rand(0, 1),
-                        'gem_msme_seller' => true,
-                        'gem_delivery_days' => rand(3, 10),
-                        'gem_premium_score' => rand(60, 95),
-                        'amazon_price' => round($basePriceInr),
-                        'amazon_seller' => 'Amazon Retail',
-                        'amazon_delivery_days' => rand(1, 4),
-                        'amazon_bis_certified' => false,
-                        'flipkart_price' => round($basePriceInr * 0.98), // Flipkart slightly cheaper
-                        'flipkart_seller' => 'Flipkart Assured',
-                        'flipkart_delivery_days' => rand(2, 5),
-                        'indiamart_price' => null,
-                        'specifications' => [
-                            'Rating' => $apiProduct['rating'] . ' / 5',
-                            'Stock' => $apiProduct['stock'] . ' units',
-                            'Weight' => ($apiProduct['weight'] ?? 'N/A') . 'g'
-                        ],
-                        'gst_percent' => 18,
-                    ]);
-                }
-                return;
+        // Product intelligence database — maps keywords to realistic govt procurement items
+        $catalog = [
+            'laptop' => [
+                ['name'=>'Dell Latitude 5540 Business Laptop (i5, 16GB, 512GB)','brand'=>'Dell','cat'=>'IT Equipment','img'=>'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400','base'=>58000,'specs'=>['Processor'=>'Intel i5-1345U','RAM'=>'16GB DDR5','Storage'=>'512GB NVMe SSD','Display'=>'15.6" FHD IPS','OS'=>'Windows 11 Pro']],
+                ['name'=>'HP ProBook 450 G10 Notebook (i5, 8GB, 256GB)','brand'=>'HP','cat'=>'IT Equipment','img'=>'https://images.unsplash.com/photo-1525547719571-a2d4ac8945e2?w=400','base'=>45000,'specs'=>['Processor'=>'Intel i5-1335U','RAM'=>'8GB DDR4','Storage'=>'256GB SSD','Display'=>'15.6" FHD','OS'=>'Windows 11 Pro']],
+                ['name'=>'Lenovo ThinkPad E14 Gen 5 (i7, 16GB, 512GB)','brand'=>'Lenovo','cat'=>'IT Equipment','img'=>'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400','base'=>72000,'specs'=>['Processor'=>'Intel i7-1355U','RAM'=>'16GB DDR5','Storage'=>'512GB SSD','Display'=>'14" FHD IPS','OS'=>'Windows 11 Pro']],
+            ],
+            'printer' => [
+                ['name'=>'HP LaserJet Pro M404dn Mono Printer','brand'=>'HP','cat'=>'IT Equipment','img'=>'https://images.unsplash.com/photo-1612815154858-60aa4c59eaa6?w=400','base'=>22000,'specs'=>['Type'=>'Mono Laser','Speed'=>'38 ppm','Connectivity'=>'USB + Ethernet','Duplex'=>'Auto','Duty Cycle'=>'80,000 pages/month']],
+                ['name'=>'Canon imageCLASS MF269dw Multifunction Printer','brand'=>'Canon','cat'=>'IT Equipment','img'=>'https://images.unsplash.com/photo-1612815154858-60aa4c59eaa6?w=400','base'=>28000,'specs'=>['Type'=>'Mono Laser MFP','Speed'=>'28 ppm','Functions'=>'Print/Scan/Copy/Fax','Connectivity'=>'WiFi + USB + LAN']],
+                ['name'=>'Epson EcoTank L3250 Ink Tank Printer','brand'=>'Epson','cat'=>'IT Equipment','img'=>'https://images.unsplash.com/photo-1612815154858-60aa4c59eaa6?w=400','base'=>12500,'specs'=>['Type'=>'Ink Tank Color','Speed'=>'10 ppm','Connectivity'=>'WiFi + USB','Ink System'=>'EcoTank Refillable']],
+            ],
+            'chair' => [
+                ['name'=>'Godrej Interio Motion High-Back Office Chair','brand'=>'Godrej','cat'=>'Office Furniture','img'=>'https://images.unsplash.com/photo-1541558869434-2840d308329a?w=400','base'=>12500,'specs'=>['Material'=>'Mesh + Metal','Armrest'=>'Adjustable','Wheels'=>'Nylon Castor','Weight Capacity'=>'120 kg','BIS'=>'IS 4535']],
+                ['name'=>'Featherlite Amigo HB Ergonomic Chair','brand'=>'Featherlite','cat'=>'Office Furniture','img'=>'https://images.unsplash.com/photo-1541558869434-2840d308329a?w=400','base'=>9800,'specs'=>['Material'=>'Fabric + Metal','Lumbar Support'=>'Yes','Tilt Mechanism'=>'Synchro','Warranty'=>'5 Years']],
+                ['name'=>'Nilkamal Executive Leatherette Office Chair','brand'=>'Nilkamal','cat'=>'Office Furniture','img'=>'https://images.unsplash.com/photo-1541558869434-2840d308329a?w=400','base'=>7200,'specs'=>['Material'=>'Leatherette','Armrest'=>'Fixed','Wheels'=>'PU Castor','Weight Capacity'=>'100 kg']],
+            ],
+            'monitor' => [
+                ['name'=>'Dell P2422H 24" FHD IPS Monitor','brand'=>'Dell','cat'=>'IT Equipment','img'=>'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=400','base'=>14500,'specs'=>['Size'=>'24 inch','Panel'=>'IPS','Resolution'=>'1920x1080','Ports'=>'HDMI + DP + VGA','Stand'=>'Height Adjustable']],
+                ['name'=>'LG 27UK850-W 27" 4K USB-C Monitor','brand'=>'LG','cat'=>'IT Equipment','img'=>'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=400','base'=>32000,'specs'=>['Size'=>'27 inch','Panel'=>'IPS','Resolution'=>'3840x2160 4K','HDR'=>'HDR10','USB-C'=>'60W Power Delivery']],
+                ['name'=>'Samsung LS24A33 24" FHD LED Monitor','brand'=>'Samsung','cat'=>'IT Equipment','img'=>'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=400','base'=>9800,'specs'=>['Size'=>'24 inch','Panel'=>'VA','Resolution'=>'1920x1080','Ports'=>'HDMI + D-Sub','Response'=>'5ms']],
+            ],
+            'projector' => [
+                ['name'=>'Epson EB-X51 XGA 3LCD Projector','brand'=>'Epson','cat'=>'IT Equipment','img'=>'https://images.unsplash.com/photo-1478720568477-152d9b164e26?w=400','base'=>42000,'specs'=>['Type'=>'3LCD','Brightness'=>'3800 Lumens','Resolution'=>'XGA (1024x768)','Connectivity'=>'HDMI + VGA','Lamp Life'=>'12000 hrs']],
+                ['name'=>'BenQ MS560 SVGA DLP Projector','brand'=>'BenQ','cat'=>'IT Equipment','img'=>'https://images.unsplash.com/photo-1478720568477-152d9b164e26?w=400','base'=>32000,'specs'=>['Type'=>'DLP','Brightness'=>'4000 Lumens','Resolution'=>'SVGA','Connectivity'=>'HDMI x2','SmartEco'=>'15000 hrs']],
+            ],
+            'ac' => [
+                ['name'=>'Voltas 1.5 Ton 3 Star Split AC','brand'=>'Voltas','cat'=>'Electrical & Power','img'=>'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400','base'=>35000,'specs'=>['Capacity'=>'1.5 Ton','Star Rating'=>'3 Star','Type'=>'Split Inverter','Refrigerant'=>'R32','Copper Condenser'=>'Yes']],
+                ['name'=>'Blue Star IC318DATU 1.5T 3 Star Inverter AC','brand'=>'Blue Star','cat'=>'Electrical & Power','img'=>'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400','base'=>38000,'specs'=>['Capacity'=>'1.5 Ton','Star Rating'=>'3 Star','Type'=>'Inverter Split','Filter'=>'Silver Ion','BIS'=>'IS 1391']],
+            ],
+            'sanitizer' => [
+                ['name'=>'Dettol Hand Sanitizer 500ml (Pack of 4)','brand'=>'Dettol','cat'=>'Cleaning & Hygiene','img'=>'https://images.unsplash.com/photo-1584515933487-779824d29309?w=400','base'=>680,'specs'=>['Volume'=>'500ml x 4','Type'=>'Gel','Alcohol'=>'70%','Kills'=>'99.9% germs']],
+                ['name'=>'Lifebuoy Total 10 Hand Sanitizer 1L','brand'=>'Lifebuoy','cat'=>'Cleaning & Hygiene','img'=>'https://images.unsplash.com/photo-1584515933487-779824d29309?w=400','base'=>320,'specs'=>['Volume'=>'1 Litre','Type'=>'Liquid','Alcohol'=>'60%']],
+            ],
+            'paper' => [
+                ['name'=>'JK Copier A4 75 GSM Paper (5 Reams)','brand'=>'JK Paper','cat'=>'Stationery','img'=>'https://images.unsplash.com/photo-1531346878377-a5be20888e57?w=400','base'=>1550,'specs'=>['Size'=>'A4','GSM'=>'75','Sheets'=>'500 per ream','Pack'=>'5 Reams','Brightness'=>'94%']],
+                ['name'=>'Century Pulp A4 70 GSM Copier Paper (10 Reams)','brand'=>'Century','cat'=>'Stationery','img'=>'https://images.unsplash.com/photo-1531346878377-a5be20888e57?w=400','base'=>2800,'specs'=>['Size'=>'A4','GSM'=>'70','Sheets'=>'500 per ream','Pack'=>'10 Reams']],
+            ],
+        ];
+
+        // Find the best matching category from keywords
+        $lowerQuery = strtolower($query);
+        $matched = null;
+
+        foreach ($catalog as $keyword => $items) {
+            if (stripos($lowerQuery, $keyword) !== false) {
+                $matched = $items;
+                break;
             }
-        } catch (\Exception $e) {
-            // Silently fallback if API fails
         }
 
-        // Fallback: If the API doesn't have the product, generate realistic dummy data
-        $brands = ['Apple', 'Samsung', 'Dell', 'HP', 'Sony'];
-        $categories = ['Electronics', 'Mobiles', 'Laptops'];
-        
-        // Generate a realistic base price based on keyword
-        $basePrice = 15000;
-        if (stripos($query, 'iphone') !== false || stripos($query, 'mac') !== false) $basePrice = 80000;
-        if (stripos($query, 'laptop') !== false) $basePrice = 50000;
+        // Broad keyword fallback mapping
+        if (!$matched) {
+            $keywordMap = [
+                'computer' => 'laptop', 'notebook' => 'laptop', 'pc' => 'laptop', 'macbook' => 'laptop',
+                'desk' => 'chair', 'table' => 'chair', 'furniture' => 'chair', 'seat' => 'chair',
+                'toner' => 'printer', 'ink' => 'printer', 'copier' => 'printer', 'scanner' => 'printer',
+                'screen' => 'monitor', 'display' => 'monitor', 'lcd' => 'monitor', 'led' => 'monitor',
+                'phone' => 'laptop', 'mobile' => 'laptop', 'tablet' => 'laptop', 'ipad' => 'laptop',
+                'clean' => 'sanitizer', 'soap' => 'sanitizer', 'mask' => 'sanitizer', 'wash' => 'sanitizer',
+                'pen' => 'paper', 'notebook' => 'paper', 'stationery' => 'paper', 'register' => 'paper',
+                'cooling' => 'ac', 'fan' => 'ac', 'air' => 'ac', 'cooler' => 'ac',
+                'beam' => 'projector', 'presentation' => 'projector',
+                'ups' => 'ac', 'inverter' => 'ac', 'battery' => 'ac',
+                'iphone' => 'laptop', 'samsung' => 'laptop', 'dell' => 'laptop', 'hp' => 'laptop',
+            ];
 
-        for ($i = 1; $i <= 3; $i++) {
-            // Fluctuate base price slightly
-            $price = $basePrice + rand(-5000, 5000);
-            
+            foreach ($keywordMap as $kw => $catKey) {
+                if (stripos($lowerQuery, $kw) !== false && isset($catalog[$catKey])) {
+                    $matched = $catalog[$catKey];
+                    break;
+                }
+            }
+        }
+
+        // Ultimate fallback — try DummyJSON API
+        if (!$matched) {
+            try {
+                $response = \Illuminate\Support\Facades\Http::timeout(5)
+                    ->get("https://dummyjson.com/products/search?q=" . urlencode($query));
+
+                if ($response->successful() && !empty($response->json('products'))) {
+                    foreach (array_slice($response->json('products'), 0, 3) as $apiProduct) {
+                        $basePriceInr = round($apiProduct['price'] * 83);
+                        $gemVariation = rand(98, 108) / 100;
+                        $flipVariation = rand(94, 102) / 100;
+
+                        Product::create([
+                            'name' => $apiProduct['title'],
+                            'brand' => $apiProduct['brand'] ?? 'Generic',
+                            'category' => ucfirst(str_replace(['-', '_'], ' ', $apiProduct['category'] ?? 'General')),
+                            'description' => $apiProduct['description'] ?? '',
+                            'image_url' => $apiProduct['thumbnail'],
+                            'gem_price' => round($basePriceInr * $gemVariation),
+                            'gem_seller' => 'GeM Verified Vendor',
+                            'gem_bis_certified' => true,
+                            'gem_make_in_india' => (bool)rand(0, 1),
+                            'gem_msme_seller' => (bool)rand(0, 1),
+                            'gem_delivery_days' => rand(4, 10),
+                            'gem_premium_score' => rand(55, 90),
+                            'amazon_price' => $basePriceInr,
+                            'amazon_seller' => 'Amazon India',
+                            'amazon_rating' => round($apiProduct['rating'] ?? 4.0, 1),
+                            'amazon_delivery_days' => rand(1, 4),
+                            'amazon_bis_certified' => false,
+                            'flipkart_price' => round($basePriceInr * $flipVariation),
+                            'flipkart_seller' => 'Flipkart Assured',
+                            'flipkart_delivery_days' => rand(2, 5),
+                            'indiamart_price' => round($basePriceInr * 0.88),
+                            'indiamart_seller' => 'Wholesale Supplier',
+                            'indiamart_moq' => rand(3, 10),
+                            'indiamart_delivery_days' => rand(7, 14),
+                            'specifications' => ['Rating' => ($apiProduct['rating'] ?? '4.0') . '/5', 'Warranty' => rand(1,2) . ' Year'],
+                            'gst_percent' => 18,
+                        ]);
+                    }
+                    return;
+                }
+            } catch (\Exception $e) { /* fallback below */ }
+
+            // Final fallback — generate generic but realistic product
+            $matched = [
+                ['name' => ucwords($query) . ' (Standard Model)', 'brand' => 'Generic India', 'cat' => 'General Supplies', 'img' => 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400', 'base' => rand(500, 25000), 'specs' => ['Type' => ucwords($query), 'Origin' => 'India', 'Warranty' => '1 Year', 'Condition' => 'New']],
+                ['name' => ucwords($query) . ' (Premium Model)', 'brand' => 'BrandX India', 'cat' => 'General Supplies', 'img' => 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400', 'base' => rand(1000, 35000), 'specs' => ['Type' => ucwords($query), 'Origin' => 'India', 'Warranty' => '2 Years', 'Grade' => 'Commercial']],
+            ];
+        }
+
+        // Create products from matched catalog
+        $gemSellers = ['TechSupplies India Pvt Ltd', 'National IT Solutions', 'BharatTech Ventures', 'Swadeshi Digital Pvt Ltd', 'Govt Authorized Reseller'];
+        $amazonSellers = ['Amazon India Official', 'CloudTail India', 'Appario Retail', 'RetailNet India'];
+        $flipkartSellers = ['Flipkart Assured', 'SuperComNet', 'TechWorld Retail', 'OmniTech India'];
+        $indiamartSellers = ['Delhi IT Hub', 'Mumbai Wholesale Co.', 'Hyderabad Electronics', 'Pune Supply Chain'];
+
+        foreach ($matched as $item) {
+            $base = $item['base'];
+            // Realistic price variations: GeM is 0-8% higher, Flipkart 2-6% lower, IndiaMART 10-15% lower for bulk
+            $gemPrice = round($base * (rand(100, 108) / 100));
+            $amazonPrice = round($base * (rand(97, 103) / 100));
+            $flipkartPrice = round($base * (rand(94, 101) / 100));
+            $indiamartPrice = round($base * (rand(85, 93) / 100));
+
             Product::create([
-                'name' => ucwords($query),
-                'brand' => $brands[array_rand($brands)],
-                'category' => $categories[array_rand($categories)],
-                'description' => "High-quality $query available across multiple platforms.",
-                'image_url' => 'https://ui-avatars.com/api/?name=' . urlencode($query) . '&background=random&size=400',
-                'gem_price' => $price,
-                'gem_seller' => 'GeM Verified Vendor ' . rand(1, 100),
+                'name' => $item['name'],
+                'brand' => $item['brand'],
+                'category' => $item['cat'],
+                'description' => "Government procurement grade {$item['name']}. Available for comparison across GeM, Amazon, Flipkart and IndiaMART.",
+                'image_url' => $item['img'],
+                'gem_price' => $gemPrice,
+                'gem_seller' => $gemSellers[array_rand($gemSellers)],
                 'gem_bis_certified' => true,
-                'gem_make_in_india' => true,
-                'gem_msme_seller' => true,
-                'gem_delivery_days' => rand(3, 10),
-                'gem_premium_score' => rand(50, 95),
-                'amazon_price' => $price * (rand(95, 105) / 100),
-                'amazon_seller' => 'Amazon Retail',
-                'amazon_delivery_days' => rand(1, 5),
-                'amazon_bis_certified' => false,
-                'flipkart_price' => $price * (rand(95, 105) / 100),
-                'flipkart_seller' => 'Flipkart Assured',
-                'flipkart_delivery_days' => rand(2, 6),
-                'indiamart_price' => null,
-                'specifications' => [
-                    'Origin' => 'India',
-                    'Warranty' => rand(1, 3) . ' Years',
-                    'Condition' => 'New'
-                ],
+                'gem_make_in_india' => (bool)rand(0, 1),
+                'gem_msme_seller' => (bool)rand(0, 1),
+                'gem_delivery_days' => rand(4, 10),
+                'gem_warranty_months' => rand(12, 36),
+                'gem_seller_rating' => number_format(rand(38, 48) / 10, 1),
+                'gem_premium_score' => rand(55, 92),
+                'amazon_price' => $amazonPrice,
+                'amazon_seller' => $amazonSellers[array_rand($amazonSellers)],
+                'amazon_rating' => round(rand(38, 47) / 10, 1),
+                'amazon_reviews' => rand(200, 12000),
+                'amazon_delivery_days' => rand(1, 4),
+                'amazon_warranty_months' => rand(6, 24),
+                'amazon_bis_certified' => (bool)rand(0, 1),
+                'amazon_shipping' => 0,
+                'flipkart_price' => $flipkartPrice,
+                'flipkart_seller' => $flipkartSellers[array_rand($flipkartSellers)],
+                'flipkart_rating' => round(rand(37, 46) / 10, 1),
+                'flipkart_reviews' => rand(100, 8000),
+                'flipkart_delivery_days' => rand(2, 5),
+                'flipkart_warranty_months' => rand(6, 24),
+                'flipkart_shipping' => 0,
+                'indiamart_price' => $indiamartPrice,
+                'indiamart_seller' => $indiamartSellers[array_rand($indiamartSellers)],
+                'indiamart_moq' => rand(3, 15),
+                'indiamart_delivery_days' => rand(7, 14),
+                'specifications' => $item['specs'],
                 'gst_percent' => 18,
             ]);
         }
