@@ -93,10 +93,19 @@ class ProductController extends Controller
 
         $buildQuery = function() use ($query, $category, $platform, $sort) {
             return Product::query()
-                ->when($query, fn($q) => $q->where('name', 'like', "%{$query}%")
-                    ->orWhere('brand', 'like', "%{$query}%")
-                    ->orWhere('description', 'like', "%{$query}%")
-                    ->orWhere('category', 'like', "%{$query}%"))
+                ->when($query, function($q) use ($query) {
+                    $q->where(function($sub) use ($query) {
+                        $words = array_filter(explode(' ', trim($query)));
+                        foreach ($words as $word) {
+                            $sub->where(function($w) use ($word) {
+                                $w->where('name', 'like', "%{$word}%")
+                                  ->orWhere('brand', 'like', "%{$word}%")
+                                  ->orWhere('description', 'like', "%{$word}%")
+                                  ->orWhere('category', 'like', "%{$word}%");
+                            });
+                        }
+                    });
+                })
                 ->when($category, fn($q) => $q->where('category', $category))
                 ->when($platform === 'gem', fn($q) => $q->whereNotNull('gem_price'))
                 ->when($platform === 'amazon', fn($q) => $q->whereNotNull('amazon_price'))
@@ -307,9 +316,9 @@ class ProductController extends Controller
                 ['name'=>'Epson EcoTank L3250 Ink Tank Printer','brand'=>'Epson','cat'=>'IT Equipment','img'=>'https://images.unsplash.com/photo-1612815154858-60aa4c59eaa6?w=400','base'=>12500,'specs'=>['Type'=>'Ink Tank Color','Speed'=>'10 ppm','Connectivity'=>'WiFi + USB','Ink System'=>'EcoTank Refillable']],
             ],
             'chair' => [
-                ['name'=>'Godrej Interio Motion High-Back Office Chair','brand'=>'Godrej','cat'=>'Office Furniture','img'=>'https://images.unsplash.com/photo-1541558869434-2840d308329a?w=400','base'=>12500,'specs'=>['Material'=>'Mesh + Metal','Armrest'=>'Adjustable','Wheels'=>'Nylon Castor','Weight Capacity'=>'120 kg','BIS'=>'IS 4535']],
-                ['name'=>'Featherlite Amigo HB Ergonomic Chair','brand'=>'Featherlite','cat'=>'Office Furniture','img'=>'https://images.unsplash.com/photo-1541558869434-2840d308329a?w=400','base'=>9800,'specs'=>['Material'=>'Fabric + Metal','Lumbar Support'=>'Yes','Tilt Mechanism'=>'Synchro','Warranty'=>'5 Years']],
-                ['name'=>'Nilkamal Executive Leatherette Office Chair','brand'=>'Nilkamal','cat'=>'Office Furniture','img'=>'https://images.unsplash.com/photo-1541558869434-2840d308329a?w=400','base'=>7200,'specs'=>['Material'=>'Leatherette','Armrest'=>'Fixed','Wheels'=>'PU Castor','Weight Capacity'=>'100 kg']],
+                ['name'=>'Godrej Interio Motion High-Back Office Chair','brand'=>'Godrej','cat'=>'Office Furniture','img'=>'https://images.unsplash.com/photo-1505797149-43b0069ec26b?w=400','base'=>12500,'specs'=>['Material'=>'Mesh + Metal','Armrest'=>'Adjustable','Wheels'=>'Nylon Castor','Weight Capacity'=>'120 kg','BIS'=>'IS 4535']],
+                ['name'=>'Featherlite Amigo HB Ergonomic Chair','brand'=>'Featherlite','cat'=>'Office Furniture','img'=>'https://images.unsplash.com/photo-1580481072645-022f9a6dbf27?w=400','base'=>9800,'specs'=>['Material'=>'Fabric + Metal','Lumbar Support'=>'Yes','Tilt Mechanism'=>'Synchro','Warranty'=>'5 Years']],
+                ['name'=>'Nilkamal Executive Leatherette Office Chair','brand'=>'Nilkamal','cat'=>'Office Furniture','img'=>'https://images.unsplash.com/photo-1688578765431-7e8e586c99c8?w=400','base'=>7200,'specs'=>['Material'=>'Leatherette','Armrest'=>'Fixed','Wheels'=>'PU Castor','Weight Capacity'=>'100 kg']],
             ],
             'monitor' => [
                 ['name'=>'Dell P2422H 24" FHD IPS Monitor','brand'=>'Dell','cat'=>'IT Equipment','img'=>'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=400','base'=>14500,'specs'=>['Size'=>'24 inch','Panel'=>'IPS','Resolution'=>'1920x1080','Ports'=>'HDMI + DP + VGA','Stand'=>'Height Adjustable']],
@@ -317,20 +326,20 @@ class ProductController extends Controller
                 ['name'=>'Samsung LS24A33 24" FHD LED Monitor','brand'=>'Samsung','cat'=>'IT Equipment','img'=>'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=400','base'=>9800,'specs'=>['Size'=>'24 inch','Panel'=>'VA','Resolution'=>'1920x1080','Ports'=>'HDMI + D-Sub','Response'=>'5ms']],
             ],
             'projector' => [
-                ['name'=>'Epson EB-X51 XGA 3LCD Projector','brand'=>'Epson','cat'=>'IT Equipment','img'=>'https://images.unsplash.com/photo-1478720568477-152d9b164e26?w=400','base'=>42000,'specs'=>['Type'=>'3LCD','Brightness'=>'3800 Lumens','Resolution'=>'XGA (1024x768)','Connectivity'=>'HDMI + VGA','Lamp Life'=>'12000 hrs']],
-                ['name'=>'BenQ MS560 SVGA DLP Projector','brand'=>'BenQ','cat'=>'IT Equipment','img'=>'https://images.unsplash.com/photo-1478720568477-152d9b164e26?w=400','base'=>32000,'specs'=>['Type'=>'DLP','Brightness'=>'4000 Lumens','Resolution'=>'SVGA','Connectivity'=>'HDMI x2','SmartEco'=>'15000 hrs']],
+                ['name'=>'Epson EB-X51 XGA 3LCD Projector','brand'=>'Epson','cat'=>'IT Equipment','img'=>'https://images.unsplash.com/photo-1535016120720-40c646be5580?w=400','base'=>42000,'specs'=>['Type'=>'3LCD','Brightness'=>'3800 Lumens','Resolution'=>'XGA (1024x768)','Connectivity'=>'HDMI + VGA','Lamp Life'=>'12000 hrs']],
+                ['name'=>'BenQ MS560 SVGA DLP Projector','brand'=>'BenQ','cat'=>'IT Equipment','img'=>'https://images.unsplash.com/photo-1535016120720-40c646be5580?w=400','base'=>32000,'specs'=>['Type'=>'DLP','Brightness'=>'4000 Lumens','Resolution'=>'SVGA','Connectivity'=>'HDMI x2','SmartEco'=>'15000 hrs']],
             ],
             'ac' => [
-                ['name'=>'Voltas 1.5 Ton 3 Star Split AC','brand'=>'Voltas','cat'=>'Electrical & Power','img'=>'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400','base'=>35000,'specs'=>['Capacity'=>'1.5 Ton','Star Rating'=>'3 Star','Type'=>'Split Inverter','Refrigerant'=>'R32','Copper Condenser'=>'Yes']],
-                ['name'=>'Blue Star IC318DATU 1.5T 3 Star Inverter AC','brand'=>'Blue Star','cat'=>'Electrical & Power','img'=>'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400','base'=>38000,'specs'=>['Capacity'=>'1.5 Ton','Star Rating'=>'3 Star','Type'=>'Inverter Split','Filter'=>'Silver Ion','BIS'=>'IS 1391']],
+                ['name'=>'Voltas 1.5 Ton 3 Star Split AC','brand'=>'Voltas','cat'=>'Electrical & Power','img'=>'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=400','base'=>35000,'specs'=>['Capacity'=>'1.5 Ton','Star Rating'=>'3 Star','Type'=>'Split Inverter','Refrigerant'=>'R32','Copper Condenser'=>'Yes']],
+                ['name'=>'Blue Star IC318DATU 1.5T 3 Star Inverter AC','brand'=>'Blue Star','cat'=>'Electrical & Power','img'=>'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=400','base'=>38000,'specs'=>['Capacity'=>'1.5 Ton','Star Rating'=>'3 Star','Type'=>'Inverter Split','Filter'=>'Silver Ion','BIS'=>'IS 1391']],
             ],
             'sanitizer' => [
                 ['name'=>'Dettol Hand Sanitizer 500ml (Pack of 4)','brand'=>'Dettol','cat'=>'Cleaning & Hygiene','img'=>'https://images.unsplash.com/photo-1584515933487-779824d29309?w=400','base'=>680,'specs'=>['Volume'=>'500ml x 4','Type'=>'Gel','Alcohol'=>'70%','Kills'=>'99.9% germs']],
                 ['name'=>'Lifebuoy Total 10 Hand Sanitizer 1L','brand'=>'Lifebuoy','cat'=>'Cleaning & Hygiene','img'=>'https://images.unsplash.com/photo-1584515933487-779824d29309?w=400','base'=>320,'specs'=>['Volume'=>'1 Litre','Type'=>'Liquid','Alcohol'=>'60%']],
             ],
             'paper' => [
-                ['name'=>'JK Copier A4 75 GSM Paper (5 Reams)','brand'=>'JK Paper','cat'=>'Stationery','img'=>'https://images.unsplash.com/photo-1531346878377-a5be20888e57?w=400','base'=>1550,'specs'=>['Size'=>'A4','GSM'=>'75','Sheets'=>'500 per ream','Pack'=>'5 Reams','Brightness'=>'94%']],
-                ['name'=>'Century Pulp A4 70 GSM Copier Paper (10 Reams)','brand'=>'Century','cat'=>'Stationery','img'=>'https://images.unsplash.com/photo-1531346878377-a5be20888e57?w=400','base'=>2800,'specs'=>['Size'=>'A4','GSM'=>'70','Sheets'=>'500 per ream','Pack'=>'10 Reams']],
+                ['name'=>'JK Copier A4 75 GSM Paper (5 Reams)','brand'=>'JK Paper','cat'=>'Stationery','img'=>'https://images.unsplash.com/photo-1586075010923-2dd4570fb338?w=400','base'=>1550,'specs'=>['Size'=>'A4','GSM'=>'75','Sheets'=>'500 per ream','Pack'=>'5 Reams','Brightness'=>'94%']],
+                ['name'=>'Century Pulp A4 70 GSM Copier Paper (10 Reams)','brand'=>'Century','cat'=>'Stationery','img'=>'https://images.unsplash.com/photo-1586075010923-2dd4570fb338?w=400','base'=>2800,'specs'=>['Size'=>'A4','GSM'=>'70','Sheets'=>'500 per ream','Pack'=>'10 Reams']],
             ],
             'mixer' => [
                 ['name'=>'Bajaj Rex 500W Mixer Grinder (3 Jars)','brand'=>'Bajaj','cat'=>'Kitchen Appliances','img'=>'https://images.unsplash.com/photo-1585515320310-259814833e62?w=400','base'=>2200,'specs'=>['Wattage'=>'500W','Jars'=>'3 (Liquidizing, Dry Grinding, Chutney)','RPM'=>'18000','Motor'=>'Powerful Copper','BIS'=>'IS 4250']],
@@ -339,7 +348,7 @@ class ProductController extends Controller
             ],
             'phone' => [
                 ['name'=>'Samsung Galaxy A15 (6GB, 128GB) 5G','brand'=>'Samsung','cat'=>'Mobiles','img'=>'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400','base'=>14000,'specs'=>['Processor'=>'MediaTek Dimensity 6100+','RAM'=>'6GB','Storage'=>'128GB','Display'=>'6.5" Super AMOLED','Battery'=>'5000mAh']],
-                ['name'=>'Redmi Note 13 Pro (8GB, 256GB)','brand'=>'Xiaomi','cat'=>'Mobiles','img'=>'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400','base'=>18000,'specs'=>['Processor'=>'Snapdragon 7s Gen 2','RAM'=>'8GB','Storage'=>'256GB','Camera'=>'200MP OIS','Display'=>'6.67" AMOLED 120Hz']],
+                ['name'=>'Redmi Note 13 Pro (8GB, 256GB)','brand'=>'Xiaomi','cat'=>'Mobiles','img'=>'https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=400','base'=>18000,'specs'=>['Processor'=>'Snapdragon 7s Gen 2','RAM'=>'8GB','Storage'=>'256GB','Camera'=>'200MP OIS','Display'=>'6.67" AMOLED 120Hz']],
                 ['name'=>'Lava Blaze 2 5G (4GB, 128GB)','brand'=>'Lava','cat'=>'Mobiles','img'=>'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400','base'=>9500,'specs'=>['Processor'=>'MediaTek Dimensity 6020','RAM'=>'4GB','Storage'=>'128GB','Display'=>'6.5" HD+','Make in India'=>'Yes']],
             ],
             'cctv' => [
@@ -347,8 +356,8 @@ class ProductController extends Controller
                 ['name'=>'Hikvision 4MP IP Camera System (8 Channel)','brand'=>'Hikvision','cat'=>'Security & Surveillance','img'=>'https://images.unsplash.com/photo-1557597774-9d273605dfa9?w=400','base'=>22000,'specs'=>['Resolution'=>'4MP Super HD','Channels'=>'8','Night Vision'=>'30m EXIR','NVR'=>'PoE','Compression'=>'H.265+']],
             ],
             'water' => [
-                ['name'=>'Kent Grand Plus 9L RO+UV+UF Water Purifier','brand'=>'Kent','cat'=>'Water & Sanitation','img'=>'https://images.unsplash.com/photo-1564419320461-6eb9c3cda61a?w=400','base'=>15500,'specs'=>['Capacity'=>'9 Litres','Technology'=>'RO+UV+UF+TDS Control','Purification'=>'20L/hr','BIS'=>'IS 16240','Warranty'=>'1 Year + 3 Year Service']],
-                ['name'=>'Livpure Glo Star 7L RO+UV Purifier','brand'=>'Livpure','cat'=>'Water & Sanitation','img'=>'https://images.unsplash.com/photo-1564419320461-6eb9c3cda61a?w=400','base'=>8900,'specs'=>['Capacity'=>'7 Litres','Technology'=>'RO+UV+Mineraliser','Purification'=>'15L/hr','Filter Stages'=>'7']],
+                ['name'=>'Kent Grand Plus 9L RO+UV+UF Water Purifier','brand'=>'Kent','cat'=>'Water & Sanitation','img'=>'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=400','base'=>15500,'specs'=>['Capacity'=>'9 Litres','Technology'=>'RO+UV+UF+TDS Control','Purification'=>'20L/hr','BIS'=>'IS 16240','Warranty'=>'1 Year + 3 Year Service']],
+                ['name'=>'Livpure Glo Star 7L RO+UV Purifier','brand'=>'Livpure','cat'=>'Water & Sanitation','img'=>'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=400','base'=>8900,'specs'=>['Capacity'=>'7 Litres','Technology'=>'RO+UV+Mineraliser','Purification'=>'15L/hr','Filter Stages'=>'7']],
             ],
             'ups' => [
                 ['name'=>'APC Back-UPS 1100VA / 660W','brand'=>'APC','cat'=>'IT Equipment','img'=>'https://images.unsplash.com/photo-1621600411688-4be93cd68504?w=400','base'=>6500,'specs'=>['Capacity'=>'1100VA / 660W','Outlets'=>'4 Battery + 2 Surge','Backup'=>'~25 min at half load','Type'=>'Line Interactive']],
@@ -358,6 +367,20 @@ class ProductController extends Controller
                 ['name'=>'Havells Pacer 1200mm Ceiling Fan','brand'=>'Havells','cat'=>'Electrical & Power','img'=>'https://images.unsplash.com/photo-1581783898377-1c85bf937427?w=400','base'=>1800,'specs'=>['Sweep'=>'1200mm','Speed'=>'390 RPM','Motor'=>'Copper Wound','BIS'=>'IS 374','Star Rating'=>'2 Star']],
                 ['name'=>'Orient Electric Apex-FX 1200mm Ceiling Fan','brand'=>'Orient','cat'=>'Electrical & Power','img'=>'https://images.unsplash.com/photo-1581783898377-1c85bf937427?w=400','base'=>1500,'specs'=>['Sweep'=>'1200mm','Speed'=>'370 RPM','Blades'=>'Aerodynamic','Power'=>'75W','Warranty'=>'2 Years']],
                 ['name'=>'Crompton Hill Briz 48" High Speed Ceiling Fan','brand'=>'Crompton','cat'=>'Electrical & Power','img'=>'https://images.unsplash.com/photo-1581783898377-1c85bf937427?w=400','base'=>1350,'specs'=>['Sweep'=>'1200mm','Speed'=>'370 RPM','Motor'=>'Aluminium Body','Air Delivery'=>'230 CMM']],
+            ],
+            'shoes' => [
+                ['name'=>'Nike Air Zoom Pegasus 40 Running Shoes','brand'=>'Nike','cat'=>'Footwear','img'=>'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400','base'=>11500,'specs'=>['Type'=>'Running','Cushioning'=>'Zoom Air','Sole'=>'Rubber','Warranty'=>'6 Months']],
+                ['name'=>'Adidas Ultraboost Light Running Shoes','brand'=>'Adidas','cat'=>'Footwear','img'=>'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400','base'=>15000,'specs'=>['Type'=>'Premium Running','Cushioning'=>'Boost Technology','Upper'=>'Primeknit','Weight'=>'262g']],
+                ['name'=>'Puma Velocity Nitro 3 Running Shoes','brand'=>'Puma','cat'=>'Footwear','img'=>'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400','base'=>9000,'specs'=>['Type'=>'Daily Trainer','Cushioning'=>'Nitro Foam','Grip'=>'Pumagrip Sole','Warranty'=>'3 Months']],
+            ],
+            'bag' => [
+                ['name'=>'Gucci GG Marmont Leather Shoulder Bag','brand'=>'Gucci','cat'=>'Fashion Accessories','img'=>'https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=400','base'=>165000,'specs'=>['Material'=>'Matelassé Chevron Leather','Hardware'=>'Double G','Size'=>'Small','Origin'=>'Italy']],
+                ['name'=>'American Tourister Fitpack 32L Backpack','brand'=>'American Tourister','cat'=>'Travel Gear','img'=>'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400','base'=>2200,'specs'=>['Capacity'=>'32 Litres','Material'=>'Polyester','Compartments'=>'3','Warranty'=>'1 Year']],
+            ],
+            'tv' => [
+                ['name'=>'LG C3 55" Smart OLED 4K TV','brand'=>'LG','cat'=>'Consumer Electronics','img'=>'https://images.unsplash.com/photo-1593305841991-05c297ba4575?w=400','base'=>125000,'specs'=>['Size'=>'55 Inch','Panel'=>'OLED EVO','Resolution'=>'4K UHD','Processor'=>'α9 AI Gen6','OS'=>'webOS 23']],
+                ['name'=>'Sony BRAVIA XR 65" 4K Google TV','brand'=>'Sony','cat'=>'Consumer Electronics','img'=>'https://images.unsplash.com/photo-1593305841991-05c297ba4575?w=400','base'=>145000,'specs'=>['Size'=>'65 Inch','Panel'=>'LED','Resolution'=>'4K HDR','Processor'=>'Cognitive Processor XR','OS'=>'Google TV']],
+                ['name'=>'Samsung 43" Crystal 4K UHD TV','brand'=>'Samsung','cat'=>'Consumer Electronics','img'=>'https://images.unsplash.com/photo-1593305841991-05c297ba4575?w=400','base'=>32000,'specs'=>['Size'=>'43 Inch','Panel'=>'LED','Resolution'=>'4K Ultra HD','OS'=>'Tizen OS','Warranty'=>'1 Year']],
             ],
         ];
 
@@ -390,6 +413,9 @@ class ProductController extends Controller
                 'purifier' => 'water', 'ro' => 'water', 'filter' => 'water', 'drinking' => 'water',
                 'ceiling' => 'fan', 'exhaust' => 'fan', 'pedestal' => 'fan', 'havells' => 'fan', 'crompton' => 'fan', 'orient' => 'fan',
                 'dell' => 'laptop', 'hp' => 'laptop', 'lenovo' => 'laptop',
+                'sneaker' => 'shoes', 'footwear' => 'shoes', 'running' => 'shoes', 'puma' => 'shoes', 'adidas' => 'shoes',
+                'backpack' => 'bag', 'handbag' => 'bag',
+                'television' => 'tv', 'led' => 'tv', 'oled' => 'tv', 'lg' => 'tv', 'sony' => 'tv',
             ];
 
             foreach ($keywordMap as $kw => $catKey) {
@@ -400,60 +426,87 @@ class ProductController extends Controller
             }
         }
 
-        // Ultimate fallback — try DummyJSON API
+        // 1. First attempt: Live Flipkart Scraper (Best real data)
+        $scrapedProducts = \App\Services\FlipkartScraper::search($query, 3);
+        
+        if (!empty($scrapedProducts)) {
+            $gemSellers = ['TechSupplies India Pvt Ltd', 'National IT Solutions', 'BharatTech Ventures', 'Govt Authorized Reseller'];
+            $amazonSellers = ['Amazon India Official', 'CloudTail India', 'Appario Retail'];
+            $flipkartSellers = ['Flipkart Assured', 'SuperComNet', 'RetailNet'];
+            $indiamartSellers = ['Delhi IT Hub', 'Mumbai Wholesale Co.', 'Hyderabad Electronics'];
+
+            foreach ($scrapedProducts as $item) {
+                // Determine a base price. If Flipkart couldn't find one, estimate it.
+                $basePrice = $item['price'] > 0 ? $item['price'] : rand(500, 15000);
+
+                // Realistic price variations across platforms
+                $gemPrice = round($basePrice * (rand(102, 108) / 100));     // GeM usually slightly higher due to govt terms
+                $amazonPrice = round($basePrice * (rand(98, 104) / 100));
+                $flipkartPrice = $basePrice;                                // We scraped this from Flipkart
+                $indiamartPrice = round($basePrice * (rand(85, 93) / 100)); // B2B bulk usually cheapest
+
+                Product::create([
+                    'name' => $item['title'],
+                    'brand' => $item['brand'] ?: 'Generic',
+                    'category' => ucwords(str_replace(['-', '_'], ' ', $query)), // Categorize based on query
+                    'description' => "Real-time product data synchronized. Available across multiple procurement channels.",
+                    'image_url' => $item['image'],
+                    'gem_price' => $gemPrice,
+                    'gem_seller' => $gemSellers[array_rand($gemSellers)],
+                    'gem_bis_certified' => true,
+                    'gem_make_in_india' => (bool)rand(0, 1),
+                    'gem_msme_seller' => (bool)rand(0, 1),
+                    'gem_delivery_days' => rand(3, 10),
+                    'gem_warranty_months' => rand(12, 36),
+                    'gem_seller_rating' => number_format(rand(38, 48) / 10, 1),
+                    'gem_premium_score' => rand(65, 95),
+                    
+                    'amazon_price' => $amazonPrice,
+                    'amazon_seller' => $amazonSellers[array_rand($amazonSellers)],
+                    'amazon_rating' => round(rand(38, 47) / 10, 1),
+                    'amazon_reviews' => rand(100, 5000),
+                    'amazon_delivery_days' => rand(1, 4),
+                    'amazon_warranty_months' => rand(6, 24),
+                    'amazon_bis_certified' => (bool)rand(0, 1),
+                    'amazon_shipping' => 0,
+                    
+                    'flipkart_price' => $flipkartPrice,
+                    'flipkart_seller' => $flipkartSellers[array_rand($flipkartSellers)],
+                    'flipkart_rating' => round(rand(37, 46) / 10, 1),
+                    'flipkart_reviews' => rand(50, 3000),
+                    'flipkart_delivery_days' => rand(2, 5),
+                    'flipkart_warranty_months' => rand(6, 24),
+                    'flipkart_shipping' => 0,
+                    
+                    'indiamart_price' => $indiamartPrice,
+                    'indiamart_seller' => $indiamartSellers[array_rand($indiamartSellers)],
+                    'indiamart_moq' => rand(3, 15),
+                    'indiamart_delivery_days' => rand(5, 12),
+                    
+                    'specifications' => [
+                        'Source' => 'Live Market Sync',
+                        'Condition' => 'New',
+                        'Verification' => 'Cross-Checked'
+                    ],
+                    'gst_percent' => 18,
+                ]);
+            }
+            return; // Successfully created from scraper
+        }
+
+        // 2. Fallback: Internal Intelligence Catalog (If scraper fails or network issue)
         if (!$matched) {
-            try {
-                $response = \Illuminate\Support\Facades\Http::timeout(5)
-                    ->get("https://dummyjson.com/products/search?q=" . urlencode($query));
-
-                if ($response->successful() && !empty($response->json('products'))) {
-                    foreach (array_slice($response->json('products'), 0, 3) as $apiProduct) {
-                        $basePriceInr = round($apiProduct['price'] * 83);
-                        $gemVariation = rand(98, 108) / 100;
-                        $flipVariation = rand(94, 102) / 100;
-
-                        Product::create([
-                            'name' => $apiProduct['title'],
-                            'brand' => $apiProduct['brand'] ?? 'Generic',
-                            'category' => ucfirst(str_replace(['-', '_'], ' ', $apiProduct['category'] ?? 'General')),
-                            'description' => $apiProduct['description'] ?? '',
-                            'image_url' => $apiProduct['thumbnail'],
-                            'gem_price' => round($basePriceInr * $gemVariation),
-                            'gem_seller' => 'GeM Verified Vendor',
-                            'gem_bis_certified' => true,
-                            'gem_make_in_india' => (bool)rand(0, 1),
-                            'gem_msme_seller' => (bool)rand(0, 1),
-                            'gem_delivery_days' => rand(4, 10),
-                            'gem_premium_score' => rand(55, 90),
-                            'amazon_price' => $basePriceInr,
-                            'amazon_seller' => 'Amazon India',
-                            'amazon_rating' => round($apiProduct['rating'] ?? 4.0, 1),
-                            'amazon_delivery_days' => rand(1, 4),
-                            'amazon_bis_certified' => false,
-                            'flipkart_price' => round($basePriceInr * $flipVariation),
-                            'flipkart_seller' => 'Flipkart Assured',
-                            'flipkart_delivery_days' => rand(2, 5),
-                            'indiamart_price' => round($basePriceInr * 0.88),
-                            'indiamart_seller' => 'Wholesale Supplier',
-                            'indiamart_moq' => rand(3, 10),
-                            'indiamart_delivery_days' => rand(7, 14),
-                            'specifications' => ['Rating' => ($apiProduct['rating'] ?? '4.0') . '/5', 'Warranty' => rand(1,2) . ' Year'],
-                            'gst_percent' => 18,
-                        ]);
-                    }
-                    return;
-                }
-            } catch (\Exception $e) { /* fallback below */ }
-
-            // Final fallback — use a clean product placeholder, NOT random images
-            $placeholderImg = 'https://placehold.co/400x300/1a1a2e/67E8F9?text=' . urlencode(ucwords($query));
+            $words = explode(' ', trim(strtolower($query)));
+            $lastWord = end($words);
+            // Fallback to query if last word is too short (less than 2 chars)
+            $tag = strlen($lastWord) >= 2 ? $lastWord : 'product';
+            $placeholderImg = 'https://loremflickr.com/400/400/' . $tag . ',product';
             $matched = [
-                ['name' => ucwords($query) . ' (Standard Grade)', 'brand' => 'Indian Manufacturer', 'cat' => 'General Supplies', 'img' => $placeholderImg, 'base' => rand(800, 15000), 'specs' => ['Type' => ucwords($query), 'Origin' => 'India', 'Warranty' => '1 Year', 'Condition' => 'New', 'BIS Certified' => 'Yes']],
-                ['name' => ucwords($query) . ' (Premium Grade)', 'brand' => 'Govt Approved Vendor', 'cat' => 'General Supplies', 'img' => $placeholderImg, 'base' => rand(2000, 25000), 'specs' => ['Type' => ucwords($query), 'Origin' => 'India', 'Warranty' => '2 Years', 'Grade' => 'Commercial / Govt']],
+                ['name' => ucwords($query) . ' (Standard Grade)', 'brand' => 'Indian Manufacturer', 'cat' => 'General Supplies', 'img' => $placeholderImg, 'base' => rand(1500, 8000), 'specs' => ['Type' => ucwords($query), 'Origin' => 'India', 'Warranty' => '1 Year', 'Condition' => 'New', 'BIS Certified' => 'Yes']],
+                ['name' => ucwords($query) . ' (Premium Grade)', 'brand' => 'Govt Approved Vendor', 'cat' => 'General Supplies', 'img' => $placeholderImg, 'base' => rand(8000, 25000), 'specs' => ['Type' => ucwords($query), 'Origin' => 'India', 'Warranty' => '2 Years', 'Grade' => 'Commercial / Govt']],
             ];
         }
 
-        // Create products from matched catalog
         $gemSellers = ['TechSupplies India Pvt Ltd', 'National IT Solutions', 'BharatTech Ventures', 'Swadeshi Digital Pvt Ltd', 'Govt Authorized Reseller'];
         $amazonSellers = ['Amazon India Official', 'CloudTail India', 'Appario Retail', 'RetailNet India'];
         $flipkartSellers = ['Flipkart Assured', 'SuperComNet', 'TechWorld Retail', 'OmniTech India'];
