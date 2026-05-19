@@ -25,6 +25,64 @@ class ProductController extends Controller
         return view('home', compact('categories', 'featuredProducts', 'stats'));
     }
 
+    /** Analytics Dashboard */
+    public function dashboard()
+    {
+        $products = Product::all();
+        $totalProducts = $products->count();
+        $totalSavings = round($products->sum('savings'), 0);
+        $gemCheaperCount = Product::whereNotNull('gem_price')
+            ->whereNotNull('amazon_price')
+            ->whereColumn('gem_price', '<', 'amazon_price')
+            ->count();
+
+        // Anomaly count
+        $anomalyCount = $products->filter(function ($p) {
+            $marketPrices = array_filter([$p->amazon_price, $p->flipkart_price]);
+            if (!$p->gem_price || count($marketPrices) < 1) return false;
+            $avgMarket = array_sum($marketPrices) / count($marketPrices);
+            return $avgMarket > 0 && ($p->gem_price / $avgMarket) > 1.3;
+        })->count();
+
+        // Platform distribution: which platform wins most
+        $platformDistribution = ['GeM' => 0, 'Amazon' => 0, 'Flipkart' => 0, 'IndiaMART' => 0];
+        foreach ($products as $p) {
+            $lp = $p->lowest_platform;
+            if ($lp && isset($platformDistribution[$lp])) {
+                $platformDistribution[$lp]++;
+            }
+        }
+
+        // Category savings
+        $categorySavings = $products->groupBy('category')->map(function ($items, $cat) {
+            return [
+                'category' => $cat,
+                'avg_savings' => round($items->avg('savings'), 0),
+            ];
+        })->values();
+
+        // Category health index
+        $categoryHealth = $products->groupBy('category')->map(function ($items, $cat) {
+            $avgGem = $items->where('gem_price', '>', 0)->avg('gem_price') ?: 0;
+            $avgMarket = $items->map(function ($p) {
+                $prices = array_filter([$p->amazon_price, $p->flipkart_price]);
+                return count($prices) ? array_sum($prices) / count($prices) : 0;
+            })->filter()->avg() ?: 0;
+            $delta = $avgMarket > 0 ? round((($avgGem / $avgMarket) - 1) * 100, 1) : 0;
+            return [
+                'category' => $cat,
+                'avg_gem' => $avgGem,
+                'avg_market' => $avgMarket,
+                'delta' => $delta,
+            ];
+        })->values();
+
+        return view('dashboard', compact(
+            'totalProducts', 'totalSavings', 'gemCheaperCount', 'anomalyCount',
+            'platformDistribution', 'categorySavings', 'categoryHealth'
+        ));
+    }
+
     /** Search products */
     public function search(Request $request)
     {

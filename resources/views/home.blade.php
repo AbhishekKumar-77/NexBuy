@@ -1,198 +1,138 @@
 @extends('layouts.app')
-@section('title', 'NexBuy — Compare GeM, Amazon & Flipkart Prices')
+@section('title', 'NexBuy — Next-Gen Procurement Intelligence')
 
 @section('content')
-<div class="main">
+<!-- Hero Section -->
+<section style="text-align: center; padding: 6rem 0; position: relative;" class="fade-up">
+    <div style="display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(124, 58, 237, 0.1); border: 1px solid rgba(124, 58, 237, 0.3); padding: 0.5rem 1.25rem; border-radius: 50px; font-size: 0.85rem; font-weight: 600; color: #C4B5FD; margin-bottom: 2rem;">
+        <span style="display: inline-block; width: 8px; height: 8px; background: #34D399; border-radius: 50%; box-shadow: 0 0 10px #34D399;"></span>
+        Live Intelligence Engine v2.0
+    </div>
+    
+    <h1 class="font-display" style="font-size: clamp(3rem, 6vw, 4.5rem); font-weight: 800; line-height: 1.1; margin-bottom: 1.5rem; letter-spacing: -1px;">
+        Procurement without <br>
+        <span class="text-gradient">compromise.</span>
+    </h1>
+    
+    <p style="color: var(--text-muted); font-size: 1.15rem; max-width: 600px; margin: 0 auto 3rem; line-height: 1.6;">
+        Instantly audit GeM pricing against Amazon, Flipkart, and IndiaMART. Detect anomalies, generate CS reports, and optimize your TCO in milliseconds.
+    </p>
 
-    <!-- ─── HERO ─── -->
-    <section style="padding:3.5rem 0 3rem;text-align:center;" class="fade-in">
-        <div style="display:inline-flex;align-items:center;gap:0.5rem;background:rgba(108,99,255,0.12);border:1px solid rgba(108,99,255,0.3);border-radius:50px;padding:0.35rem 1rem;font-size:0.8rem;color:var(--primary-light);margin-bottom:1.5rem;">
-            🇮🇳 India's First GeM ↔ Marketplace Price Intelligence Platform
-        </div>
-        <h1 style="font-family:'Outfit',sans-serif;font-size:clamp(2rem,5vw,3.5rem);font-weight:900;line-height:1.15;margin-bottom:1rem;">
-            Stop Overpaying.<br>
-            <span style="background:linear-gradient(135deg,var(--primary),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">
-                Compare GeM vs Market
-            </span>
-            in Seconds.
-        </h1>
-        <p style="color:var(--text-muted);font-size:1.1rem;max-width:620px;margin:0 auto 2rem;">
-            NexBuy compares Government e-Marketplace (GeM) prices with Amazon, Flipkart & IndiaMART —
-            with compliance checks, TCO calculator, fraud detection, and one-click CS reports.
-        </p>
+    <div style="display: flex; justify-content: center; gap: 1rem;">
+        <a href="{{ route('search') }}" class="btn btn-primary" style="padding: 1rem 2rem; font-size: 1.05rem;">
+            <i class="ph-fill ph-rocket"></i> Start Engine
+        </a>
+        <a href="{{ route('tco') }}" class="btn btn-outline" style="padding: 1rem 2rem; font-size: 1.05rem;">
+            <i class="ph ph-chart-line-up"></i> TCO Analysis
+        </a>
+    </div>
+</section>
 
-        <!-- Hero Search -->
-        <form action="{{ route('search') }}" method="GET" style="max-width:600px;margin:0 auto 2.5rem;">
-            <div style="display:flex;background:var(--bg2);border:1px solid var(--glass-border);border-radius:50px;overflow:hidden;box-shadow:0 4px 24px rgba(108,99,255,0.15);">
-                <input type="text" name="q" placeholder="Search: Laptop, Toner, Chair, UPS…"
-                    style="flex:1;border:none;background:none;color:var(--text);padding:1rem 1.5rem;font-size:1rem;outline:none;font-family:'Inter',sans-serif;" autocomplete="off"/>
-                <button type="submit" style="background:linear-gradient(135deg,var(--primary),var(--primary-dark));border:none;color:white;padding:0.75rem 2rem;font-size:1rem;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap;">
-                    🔍 Compare Now
-                </button>
+<!-- Stats Overview -->
+<section class="grid grid-4 mb-8" style="animation-delay: 0.2s;">
+    @php
+        $statsData = [
+            ['icon' => 'ph-cube', 'label' => 'Products Tracked', 'value' => number_format($stats['total_products']).'+', 'color' => '#8B5CF6'],
+            ['icon' => 'ph-piggy-bank', 'label' => 'Avg Savings', 'value' => '₹'.number_format($stats['avg_savings'], 0), 'color' => '#10B981'],
+            ['icon' => 'ph-squares-four', 'label' => 'Categories', 'value' => $stats['categories'], 'color' => '#F59E0B'],
+            ['icon' => 'ph-trend-down', 'label' => 'GeM Cheaper', 'value' => $stats['gem_cheaper_count'], 'color' => '#06B6D4']
+        ];
+    @endphp
+    @foreach($statsData as $s)
+    <div class="card" style="padding: 2rem; text-align: center; border-top: 3px solid {{ $s['color'] }}40;">
+        <i class="ph {{ $s['icon'] }}" style="font-size: 2.5rem; color: {{ $s['color'] }}; margin-bottom: 1rem;"></i>
+        <div class="font-display" style="font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem; color: {{ $s['color'] }}">{{ $s['value'] }}</div>
+        <div style="color: var(--text-muted); font-size: 0.9rem; font-weight: 500; text-transform: uppercase; letter-spacing: 1px;">{{ $s['label'] }}</div>
+    </div>
+    @endforeach
+</section>
+
+<!-- Featured Comparisons -->
+<section class="mb-8 fade-up" style="animation-delay: 0.4s;">
+    <div class="flex items-center justify-between mb-4">
+        <h2 class="font-display" style="font-size: 2rem; font-weight: 700;"><i class="ph-fill ph-fire text-gradient"></i> Trending Comparisons</h2>
+        <a href="{{ route('search') }}" class="btn btn-ghost">View All Markets <i class="ph ph-arrow-right"></i></a>
+    </div>
+    
+    <div class="grid grid-auto">
+        @foreach($featuredProducts as $product)
+        <div class="card" style="display: flex; flex-direction: column;">
+            @if($product->image_url)
+            <div style="height: 200px; position: relative; overflow: hidden; background: #111;">
+                <img src="{{ $product->image_url }}" alt="{{ $product->name }}" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.7; transition: var(--transition);" onmouseover="this.style.transform='scale(1.05)'; this.style.opacity='1';" onmouseout="this.style.transform='scale(1)'; this.style.opacity='0.7';">
+                <div style="position: absolute; top: 1rem; left: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                    @if($product->gem_make_in_india)
+                    <span class="badge badge-purple" style="backdrop-filter: blur(4px);">🇮🇳 MII</span>
+                    @endif
+                    @if($product->gem_bis_certified)
+                    <span class="badge badge-success" style="backdrop-filter: blur(4px);">✅ BIS</span>
+                    @endif
+                </div>
+                @if($product->savings > 0)
+                <div style="position: absolute; bottom: 1rem; right: 1rem; background: rgba(16,185,129,0.9); backdrop-filter: blur(8px); color: white; padding: 0.4rem 0.8rem; border-radius: var(--radius-sm); font-weight: 700; font-size: 0.85rem; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+                    Save ₹{{ number_format($product->savings, 0) }}
+                </div>
+                @endif
             </div>
-        </form>
-
-        <!-- Platform Badges -->
-        <div style="display:flex;justify-content:center;gap:0.75rem;flex-wrap:wrap;">
-            <span class="badge badge-gem">🏛 GeM Portal</span>
-            <span class="badge badge-amazon">🛒 Amazon</span>
-            <span class="badge badge-flipkart">🛍 Flipkart</span>
-            <span class="badge badge-indiamart">🏭 IndiaMART</span>
-            <span class="badge badge-accent">✅ BIS Compliance</span>
-            <span class="badge badge-purple">📊 TCO Calculator</span>
-        </div>
-    </section>
-
-    <!-- ─── STATS ─── -->
-    <section class="grid-4 mb-4">
-        <div class="card" style="text-align:center;padding:1.5rem;background:linear-gradient(135deg,rgba(108,99,255,0.12),rgba(108,99,255,0.04));">
-            <div style="font-size:2rem;font-family:'Outfit',sans-serif;font-weight:800;color:var(--primary);">{{ number_format($stats['total_products']) }}+</div>
-            <div class="text-muted text-sm mt-1">Products Tracked</div>
-        </div>
-        <div class="card" style="text-align:center;padding:1.5rem;background:linear-gradient(135deg,rgba(0,212,170,0.10),rgba(0,212,170,0.03));">
-            <div style="font-size:2rem;font-family:'Outfit',sans-serif;font-weight:800;color:var(--accent);">₹{{ number_format($stats['avg_savings'], 0) }}</div>
-            <div class="text-muted text-sm mt-1">Avg Savings Per Product</div>
-        </div>
-        <div class="card" style="text-align:center;padding:1.5rem;background:linear-gradient(135deg,rgba(245,158,11,0.10),rgba(245,158,11,0.03));">
-            <div style="font-size:2rem;font-family:'Outfit',sans-serif;font-weight:800;color:var(--gem);">{{ $stats['categories'] }}</div>
-            <div class="text-muted text-sm mt-1">Product Categories</div>
-        </div>
-        <div class="card" style="text-align:center;padding:1.5rem;background:linear-gradient(135deg,rgba(34,197,94,0.10),rgba(34,197,94,0.03));">
-            <div style="font-size:2rem;font-family:'Outfit',sans-serif;font-weight:800;color:var(--success);">{{ $stats['gem_cheaper_count'] }}</div>
-            <div class="text-muted text-sm mt-1">Products Cheaper on GeM</div>
-        </div>
-    </section>
-
-    <!-- ─── QUICK CATEGORY BROWSE ─── -->
-    <section class="mb-4">
-        <div class="section-title">
-            <div class="icon">📂</div> Browse by Category
-        </div>
-        <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
-            @foreach($categories as $cat)
-            <a href="{{ route('search', ['category' => $cat]) }}"
-               style="background:var(--bg2);border:1px solid var(--border);border-radius:50px;padding:0.5rem 1.25rem;color:var(--text);text-decoration:none;font-size:0.875rem;transition:all 0.2s;display:flex;align-items:center;gap:0.4rem;"
-               onmouseover="this.style.borderColor='var(--primary)';this.style.color='var(--primary)'"
-               onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text)'">
-                @if($cat == 'IT Equipment') 💻
-                @elseif($cat == 'Office Furniture') 🪑
-                @elseif($cat == 'Office Supplies') 🖨
-                @elseif($cat == 'Stationery') ✏️
-                @elseif($cat == 'Cleaning & Hygiene') 🧴
-                @elseif($cat == 'Electrical & Power') ⚡
-                @else 📦 @endif
-                {{ $cat }}
-            </a>
-            @endforeach
-        </div>
-    </section>
-
-    <!-- ─── FEATURED PRODUCTS ─── -->
-    <section class="mb-4">
-        <div class="flex items-center justify-between mb-3">
-            <div class="section-title" style="margin-bottom:0;">
-                <div class="icon">🔥</div> Featured Comparisons
-            </div>
-            <a href="{{ route('search') }}" class="btn btn-ghost btn-sm">View All →</a>
-        </div>
-        <div class="grid-auto">
-            @foreach($featuredProducts as $product)
-            <div class="card fade-in">
-                @if($product->image_url)
-                <div style="height:160px;background:var(--bg3);overflow:hidden;position:relative;">
-                    <img src="{{ $product->image_url }}" alt="{{ $product->name }}"
-                         style="width:100%;height:100%;object-fit:cover;opacity:0.85;"/>
-                    <div style="position:absolute;top:0.75rem;left:0.75rem;display:flex;gap:0.4rem;flex-wrap:wrap;">
-                        @if($product->gem_make_in_india)
-                        <span class="badge badge-accent" style="font-size:0.65rem;">🇮🇳 Make in India</span>
-                        @endif
-                        @if($product->gem_bis_certified)
-                        <span class="badge badge-success" style="font-size:0.65rem;">✅ BIS</span>
-                        @endif
+            @endif
+            
+            <div style="padding: 1.5rem; flex: 1; display: flex; flex-direction: column;">
+                <div style="color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem;">{{ $product->category }}</div>
+                <h3 style="font-size: 1.1rem; font-weight: 600; line-height: 1.4; margin-bottom: 1.5rem; flex: 1;">
+                    {{ Str::limit($product->name, 60) }}
+                </h3>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1.5rem;">
+                    @if($product->gem_price)
+                    <div style="background: rgba(245,158,11,0.05); border: 1px solid rgba(245,158,11,0.1); border-radius: var(--radius-sm); padding: 0.75rem; text-align: center;">
+                        <div style="font-size: 0.7rem; color: var(--gem); font-weight: 700; text-transform: uppercase; margin-bottom: 0.2rem;">GeM</div>
+                        <div style="font-size: 1.1rem; font-weight: 700; color: white;">₹{{ number_format($product->gem_price, 0) }}</div>
                     </div>
-                    @if($product->savings > 0)
-                    <div style="position:absolute;top:0.75rem;right:0.75rem;background:var(--success);color:white;font-size:0.7rem;font-weight:700;padding:0.2rem 0.6rem;border-radius:50px;">
-                        Save ₹{{ number_format($product->savings, 0) }}
+                    @endif
+                    @if($product->amazon_price || $product->flipkart_price)
+                    @php
+                        $marketPrice = $product->amazon_price ?: $product->flipkart_price;
+                        $marketName = $product->amazon_price ? 'Amazon' : 'Flipkart';
+                        $marketColor = $product->amazon_price ? 'var(--amazon)' : 'var(--flipkart)';
+                    @endphp
+                    <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: var(--radius-sm); padding: 0.75rem; text-align: center;">
+                        <div style="font-size: 0.7rem; color: {{ $marketColor }}; font-weight: 700; text-transform: uppercase; margin-bottom: 0.2rem;">{{ $marketName }}</div>
+                        <div style="font-size: 1.1rem; font-weight: 700; color: white;">₹{{ number_format($marketPrice, 0) }}</div>
                     </div>
                     @endif
                 </div>
-                @endif
-                <div class="card-body">
-                    <div class="text-xs text-muted mb-1">{{ $product->category }}</div>
-                    <h3 style="font-size:0.92rem;font-weight:600;margin-bottom:0.75rem;line-height:1.4;">
-                        {{ Str::limit($product->name, 60) }}
-                    </h3>
-
-                    <!-- Price Comparison Mini -->
-                    <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.75rem;">
-                        @if($product->gem_price)
-                        <div style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.25);border-radius:8px;padding:0.35rem 0.65rem;text-align:center;flex:1;">
-                            <div style="font-size:0.6rem;color:var(--gem);font-weight:600;">GeM</div>
-                            <div style="font-size:0.9rem;font-weight:700;color:var(--gem);">₹{{ number_format($product->gem_price, 0) }}</div>
-                        </div>
-                        @endif
-                        @if($product->amazon_price)
-                        <div style="background:rgba(255,153,0,0.08);border:1px solid rgba(255,153,0,0.2);border-radius:8px;padding:0.35rem 0.65rem;text-align:center;flex:1;">
-                            <div style="font-size:0.6rem;color:var(--amazon);font-weight:600;">AMZ</div>
-                            <div style="font-size:0.9rem;font-weight:700;color:var(--amazon);">₹{{ number_format($product->amazon_price, 0) }}</div>
-                        </div>
-                        @endif
-                        @if($product->flipkart_price)
-                        <div style="background:rgba(40,116,240,0.08);border:1px solid rgba(40,116,240,0.2);border-radius:8px;padding:0.35rem 0.65rem;text-align:center;flex:1;">
-                            <div style="font-size:0.6rem;color:var(--flipkart);font-weight:600;">FK</div>
-                            <div style="font-size:0.9rem;font-weight:700;color:var(--flipkart);">₹{{ number_format($product->flipkart_price, 0) }}</div>
-                        </div>
-                        @endif
-                    </div>
-
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <span class="text-xs text-muted">Best: </span>
-                            <span style="font-weight:700;color:var(--accent);">{{ $product->lowest_platform }}</span>
-                            <span style="font-size:0.85rem;font-weight:700;color:var(--accent);"> ₹{{ number_format($product->lowest_price, 0) }}</span>
-                        </div>
-                        <a href="{{ route('product.show', $product) }}" class="btn btn-primary btn-sm">Compare →</a>
-                    </div>
-                </div>
+                
+                <a href="{{ route('product.show', $product) }}" class="btn btn-outline" style="width: 100%;">
+                    Deep Dive <i class="ph ph-arrow-right"></i>
+                </a>
             </div>
-            @endforeach
         </div>
-    </section>
+        @endforeach
+    </div>
+</section>
 
-    <!-- ─── FEATURES STRIP ─── -->
-    <section class="mb-4" style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:2.5rem;">
-        <div class="section-title" style="justify-content:center;text-align:center;">
-            <div class="icon">✨</div> What Makes NexBuy Different
-        </div>
-        <div class="grid-3" style="gap:2rem;">
+<!-- Features Grid -->
+<section class="mb-8 fade-up" style="animation-delay: 0.6s;">
+    <div style="background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: 4rem; position: relative; overflow: hidden;">
+        <div style="position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(124,58,237,0.05) 0%, transparent 50%); pointer-events: none;"></div>
+        
+        <h2 class="font-display text-center mb-8" style="font-size: 2.5rem; font-weight: 700;">Platform Capabilities</h2>
+        
+        <div class="grid grid-3">
             @foreach([
-                ['💰', 'TCO Calculator', 'See the *real* cost including GST, shipping, AMC — not just the sticker price.'],
-                ['✅', 'Compliance Check', 'Flags BIS certification, Make in India, MSME status for every product.'],
-                ['📊', 'Price History', '90-day price charts across GeM, Amazon & Flipkart in one view.'],
-                ['🚨', 'Fraud Detection', 'ML-style flags for overpriced GeM listings and counterfeit risk on commercial platforms.'],
-                ['📋', 'CS Report Generator', '1-click Comparative Statement PDF — hours of manual work done in seconds.'],
-                ['🏷️', 'GeM Premium Score', 'Our proprietary 0-100 score answering: Is GeM actually worth it?'],
-            ] as [$icon, $title, $desc])
-            <div style="text-align:center;">
-                <div style="font-size:2rem;margin-bottom:0.75rem;">{{ $icon }}</div>
-                <h3 style="font-weight:700;margin-bottom:0.4rem;font-size:1rem;">{{ $title }}</h3>
-                <p style="color:var(--text-muted);font-size:0.85rem;line-height:1.5;">{{ $desc }}</p>
+                ['icon' => 'ph-calculator', 'title' => 'TCO Engine', 'desc' => 'Calculate true cost of ownership factoring in GST, logistics, and AMC.'],
+                ['icon' => 'ph-shield-check', 'title' => 'Compliance Matrix', 'desc' => 'Instant verification of BIS certification, Make in India, and MSME flags.'],
+                ['icon' => 'ph-warning-octagon', 'title' => 'Fraud Detection', 'desc' => 'Algorithmic detection of price gouging and counterfeit risk indicators.'],
+            ] as $feature)
+            <div style="text-align: left; padding: 2rem; background: rgba(0,0,0,0.2); border-radius: var(--radius-md); border: 1px solid rgba(255,255,255,0.05); transition: var(--transition);" onmouseover="this.style.background='rgba(255,255,255,0.05)'; this.style.borderColor='var(--primary)';" onmouseout="this.style.background='rgba(0,0,0,0.2)'; this.style.borderColor='rgba(255,255,255,0.05)';">
+                <div style="width: 50px; height: 50px; background: rgba(124,58,237,0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; border: 1px solid rgba(124,58,237,0.3);">
+                    <i class="ph {{ $feature['icon'] }}" style="font-size: 1.8rem; color: #A78BFA;"></i>
+                </div>
+                <h3 class="font-display" style="font-size: 1.2rem; margin-bottom: 0.75rem;">{{ $feature['title'] }}</h3>
+                <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6;">{{ $feature['desc'] }}</p>
             </div>
             @endforeach
         </div>
-    </section>
-
-    <!-- ─── CTA ─── -->
-    <section style="text-align:center;padding:2rem 0 1rem;">
-        <h2 style="font-family:'Outfit',sans-serif;font-size:1.8rem;font-weight:800;margin-bottom:0.75rem;">
-            Ready to make smarter procurement decisions?
-        </h2>
-        <p class="text-muted mb-3">Start comparing prices and save your department lakhs annually.</p>
-        <div style="display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;">
-            <a href="{{ route('search') }}" class="btn btn-primary" style="font-size:1rem;padding:0.75rem 2rem;">🔍 Start Comparing</a>
-            <a href="{{ route('tco') }}" class="btn btn-outline" style="font-size:1rem;padding:0.75rem 2rem;">💰 Try TCO Calculator</a>
-        </div>
-    </section>
-
-</div>
+    </div>
+</section>
 @endsection

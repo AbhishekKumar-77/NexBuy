@@ -1,83 +1,93 @@
 @extends('layouts.app')
-
 @section('title', 'AI Product Matcher — NexBuy')
 
 @section('content')
-<div class="main fade-in">
-    <h1 class="page-title" style="display:flex; align-items:center; gap:0.5rem;">
-        🤖 AI Product Matcher
-    </h1>
-    <p class="text-muted mb-4">Leverage our LLM-powered engine to semantically compare product specifications and detect discrepancies between GeM and Commercial platforms.</p>
+<div class="fade-up">
+    <div class="mb-8">
+        <h1 class="font-display" style="font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.75rem;">
+            <i class="ph-fill ph-brain text-gradient"></i> AI Product Matcher
+        </h1>
+        <p style="color: var(--text-muted); font-size: 1.1rem; max-width: 700px;">
+            LLM-powered semantic analysis engine that compares GeM and commercial product specifications to detect discrepancies and verify authenticity.
+        </p>
+    </div>
 
-    <div class="card mb-4">
-        <div class="card-body">
-            <form action="{{ route('ai.matcher') }}" method="GET" class="flex items-center gap-2">
-                <div class="form-group flex-1" style="flex:1;">
-                    <select name="product_id" class="form-select" required>
-                        <option value="">-- Select a Product to Analyze --</option>
-                        @foreach($products as $prod)
-                            <option value="{{ $prod->id }}" {{ isset($selectedProduct) && $selectedProduct->id == $prod->id ? 'selected' : '' }}>
-                                {{ $prod->name }} ({{ $prod->brand }})
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-                <button type="submit" class="btn btn-primary">Run Analysis</button>
-            </form>
-        </div>
+    <!-- Selection Card -->
+    <div class="card mb-8" style="padding: 1.5rem;">
+        <form action="{{ route('ai.matcher') }}" method="GET" style="display: flex; gap: 1rem; align-items: flex-end; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 300px;">
+                <label class="form-label">Select Asset for Deep Analysis</label>
+                <select name="product_id" class="form-control" required>
+                    <option value="">— Choose a product to analyze —</option>
+                    @foreach($products as $prod)
+                    <option value="{{ $prod->id }}" {{ isset($selectedProduct) && $selectedProduct->id == $prod->id ? 'selected' : '' }}>
+                        {{ $prod->name }} ({{ $prod->brand }})
+                    </option>
+                    @endforeach
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary"><i class="ph-fill ph-brain"></i> Run Neural Analysis</button>
+        </form>
     </div>
 
     @if(isset($analysisResult) && isset($selectedProduct))
-    <div class="grid-2 mt-4">
-        <!-- GeM vs Amazon Side-by-Side -->
-        <div class="card">
-            <div class="card-body">
-                <h3 class="mb-2 platform-gem" style="font-weight: 700; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
-                    GeM Listing Details
-                </h3>
-                <h4 class="mt-3">{{ $selectedProduct->name }}</h4>
-                <p class="text-muted text-sm mb-3">Brand: {{ $selectedProduct->brand }}</p>
-                <div style="background: var(--bg3); padding: 1rem; border-radius: 8px;">
-                    <pre style="white-space: pre-wrap; font-size: 0.85rem; color: #e8e8f0;">@json($selectedProduct->specifications, JSON_PRETTY_PRINT)</pre>
+    <div class="grid grid-2 mb-8" style="gap: 2rem;">
+        <!-- GeM Data Panel -->
+        <div class="card" style="padding: 2rem;">
+            <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 1rem;">
+                <div style="width: 40px; height: 40px; background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.3); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                    <i class="ph-fill ph-bank" style="color: var(--gem); font-size: 1.2rem;"></i>
                 </div>
+                <h3 class="font-display" style="font-size: 1.2rem; font-weight: 600;">GeM Listing Profile</h3>
+            </div>
+            <h4 style="font-weight: 600; margin-bottom: 0.5rem;">{{ $selectedProduct->name }}</h4>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">Brand: {{ $selectedProduct->brand }}</p>
+            <div style="background: rgba(0,0,0,0.3); padding: 1.25rem; border-radius: var(--radius-sm); border: 1px solid var(--glass-border);">
+                <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.75rem; font-weight: 600;">Specification Vector</div>
+                <pre style="white-space: pre-wrap; font-size: 0.85rem; color: #C4B5FD; font-family: 'Plus Jakarta Sans', monospace; line-height: 1.8;">@json($selectedProduct->specifications, JSON_PRETTY_PRINT)</pre>
             </div>
         </div>
 
-        <div class="card">
-            <div class="card-body" style="background: rgba(108,99,255,0.05);">
-                <h3 class="mb-2" style="font-weight: 700; color: var(--primary-light); border-bottom: 1px solid var(--border); padding-bottom: 10px;">
-                    LLM Semantic Analysis
-                </h3>
-                
-                <div style="margin-top: 1.5rem; text-align: center;">
-                    <div style="display: inline-block; padding: 2rem; border-radius: 50%; border: 4px solid {{ $analysisResult['is_match'] ? 'var(--success)' : 'var(--danger)' }}; font-size: 2rem; font-weight: bold; margin-bottom: 1rem;">
+        <!-- AI Analysis Panel -->
+        <div class="card" style="padding: 2rem; background: linear-gradient(135deg, rgba(124,58,237,0.08), transparent); border: 1px solid rgba(124,58,237,0.2);">
+            <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 1rem;">
+                <div style="width: 40px; height: 40px; background: rgba(124,58,237,0.15); border: 1px solid rgba(124,58,237,0.3); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                    <i class="ph-fill ph-cpu" style="color: #A78BFA; font-size: 1.2rem;"></i>
+                </div>
+                <h3 class="font-display" style="font-size: 1.2rem; font-weight: 600;">Neural Analysis Output</h3>
+            </div>
+
+            <!-- Score Display -->
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <div style="display: inline-flex; align-items: center; justify-content: center; width: 100px; height: 100px; border-radius: 50%; border: 4px solid {{ $analysisResult['is_match'] ? 'var(--accent)' : 'var(--danger)' }}; background: rgba(0,0,0,0.3); backdrop-filter: blur(10px);">
+                    <span class="font-display" style="font-size: 1.5rem; font-weight: 800; color: white;">
                         {{ str_replace('Match Score: ', '', $analysisResult['analysis'][0]) }}
-                    </div>
-                    <h4 class="{{ $analysisResult['is_match'] ? 'text-success' : 'text-danger' }}" style="color: {{ $analysisResult['is_match'] ? 'var(--success)' : 'var(--danger)' }}">
-                        {{ $analysisResult['is_match'] ? 'High Confidence Match' : 'Low Confidence Match' }}
-                    </h4>
+                    </span>
                 </div>
+                <div style="margin-top: 1rem; font-weight: 700; font-size: 1.1rem; color: {{ $analysisResult['is_match'] ? 'var(--accent)' : 'var(--danger)' }};">
+                    {{ $analysisResult['is_match'] ? '✅ High Confidence Match' : '⚠️ Low Confidence Match' }}
+                </div>
+            </div>
 
-                <div class="mt-4">
-                    <h5 class="mb-2 text-muted">Analysis Breakdown:</h5>
-                    <ul style="list-style-type: none; padding-left: 0;">
-                        @foreach(array_slice($analysisResult['analysis'], 1) as $line)
-                            <li style="padding: 0.5rem 0; border-bottom: 1px solid var(--glass-border); font-size: 0.9rem;">
-                                @if(str_contains($line, 'Exact Match'))
-                                    <span style="color: var(--success);">✅</span>
-                                @else
-                                    <span style="color: var(--warning);">⚠️</span>
-                                @endif
-                                {{ $line }}
-                            </li>
-                        @endforeach
-                    </ul>
+            <!-- Analysis Breakdown -->
+            <div style="margin-bottom: 1.5rem;">
+                <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem; font-weight: 600;">Analysis Breakdown</div>
+                @foreach(array_slice($analysisResult['analysis'], 1) as $line)
+                <div style="display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem;">
+                    @if(str_contains($line, 'Exact Match'))
+                    <i class="ph-fill ph-check-circle" style="color: var(--accent); font-size: 1.2rem; flex-shrink: 0; margin-top: 2px;"></i>
+                    @else
+                    <i class="ph-fill ph-warning" style="color: var(--warning); font-size: 1.2rem; flex-shrink: 0; margin-top: 2px;"></i>
+                    @endif
+                    <span>{{ $line }}</span>
                 </div>
+                @endforeach
+            </div>
 
-                <div class="mt-4 p-3" style="background: var(--bg3); border-radius: 8px; border-left: 4px solid var(--primary);">
-                    <strong style="color: var(--primary-light);">Recommendation:</strong><br>
-                    <span style="font-size: 0.95rem;">{{ $analysisResult['recommendation'] }}</span>
-                </div>
+            <!-- Recommendation -->
+            <div style="background: rgba(0,0,0,0.3); padding: 1.25rem; border-radius: var(--radius-sm); border-left: 4px solid var(--primary);">
+                <div style="font-size: 0.75rem; color: #A78BFA; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-bottom: 0.5rem;">Intelligence Directive</div>
+                <span style="font-size: 0.95rem; line-height: 1.6;">{{ $analysisResult['recommendation'] }}</span>
             </div>
         </div>
     </div>

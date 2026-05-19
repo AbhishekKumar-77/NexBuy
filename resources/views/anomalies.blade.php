@@ -1,188 +1,129 @@
 @extends('layouts.app')
-@section('title', 'Fraud & Anomaly Alerts — NexBuy')
+@section('title', 'Threat Detection — NexBuy')
 
 @section('content')
-<div class="main">
-    <div class="page-title">🚨 Price Anomaly & Fraud Alerts</div>
-    <p class="text-muted mb-4">ML-powered detection of overpriced GeM listings, cartel-like pricing, and counterfeit risk on commercial platforms.</p>
+<div class="fade-up">
+    <div class="mb-8">
+        <h1 class="font-display" style="font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.75rem;">
+            <i class="ph-fill ph-shield-warning text-gradient"></i> Threat Detection
+        </h1>
+        <p style="color: var(--text-muted); font-size: 1.1rem; max-width: 800px;">
+            AI-powered pattern recognition for excessive markup, cartel pricing behaviors, and counterfeit risk vectors across procurement channels.
+        </p>
+    </div>
 
-    <!-- Alert Summary -->
-    <div class="grid-3 mb-4">
-        <div class="card" style="padding:1.25rem;background:linear-gradient(135deg,rgba(239,68,68,0.1),rgba(239,68,68,0.03));">
-            <div style="display:flex;align-items:center;gap:0.75rem;">
-                <div style="font-size:2rem;">⚠️</div>
+    <!-- Telemetry Cards -->
+    <div class="grid grid-3 mb-8">
+        <div class="card" style="padding: 2rem; background: linear-gradient(135deg, rgba(239,68,68,0.1), transparent); border: 1px solid rgba(239,68,68,0.2);">
+            <div style="display: flex; align-items: flex-start; justify-content: space-between;">
                 <div>
-                    <div style="font-size:1.75rem;font-weight:800;font-family:'Outfit',sans-serif;color:var(--danger);">{{ $products->count() }}</div>
-                    <div class="text-sm text-muted">Overpriced on GeM</div>
+                    <div style="color: var(--text-muted); font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem;">Critical Flags</div>
+                    <div class="font-display" style="font-size: 3rem; font-weight: 800; color: var(--danger); line-height: 1;">{{ $products->count() }}</div>
+                </div>
+                <div style="width: 48px; height: 48px; background: rgba(239,68,68,0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--danger); font-size: 1.5rem;">
+                    <i class="ph-fill ph-warning-octagon"></i>
                 </div>
             </div>
+            <div style="margin-top: 1rem; font-size: 0.9rem; color: var(--text-muted);">GeM listings exceeding market bounds</div>
         </div>
-        <div class="card" style="padding:1.25rem;background:linear-gradient(135deg,rgba(245,158,11,0.1),rgba(245,158,11,0.03));">
-            <div style="display:flex;align-items:center;gap:0.75rem;">
-                <div style="font-size:2rem;">🕵️</div>
+        
+        <div class="card" style="padding: 2rem; background: linear-gradient(135deg, rgba(245,158,11,0.1), transparent); border: 1px solid rgba(245,158,11,0.2);">
+            <div style="display: flex; align-items: flex-start; justify-content: space-between;">
                 <div>
-                    <div style="font-size:1.75rem;font-weight:800;font-family:'Outfit',sans-serif;color:var(--warning);">{{ $counterfeitRisk->count() }}</div>
-                    <div class="text-sm text-muted">Counterfeit Risk Flag</div>
+                    <div style="color: var(--text-muted); font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem;">Verification Required</div>
+                    <div class="font-display" style="font-size: 3rem; font-weight: 800; color: var(--warning); line-height: 1;">{{ $counterfeitRisk->count() }}</div>
+                </div>
+                <div style="width: 48px; height: 48px; background: rgba(245,158,11,0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--warning); font-size: 1.5rem;">
+                    <i class="ph-fill ph-detective"></i>
                 </div>
             </div>
+            <div style="margin-top: 1rem; font-size: 0.9rem; color: var(--text-muted);">Suspiciously low commercial pricing</div>
         </div>
-        <div class="card" style="padding:1.25rem;background:linear-gradient(135deg,rgba(34,197,94,0.1),rgba(34,197,94,0.03));">
-            <div style="display:flex;align-items:center;gap:0.75rem;">
-                <div style="font-size:2rem;">✅</div>
+
+        <div class="card" style="padding: 2rem; background: linear-gradient(135deg, rgba(16,185,129,0.1), transparent); border: 1px solid rgba(16,185,129,0.2);">
+            <div style="display: flex; align-items: flex-start; justify-content: space-between;">
                 <div>
-                    <div style="font-size:1.75rem;font-weight:800;font-family:'Outfit',sans-serif;color:var(--success);">
-                        {{ \App\Models\Product::count() - $products->count() - $counterfeitRisk->count() }}
-                    </div>
-                    <div class="text-sm text-muted">Products Look Fine</div>
+                    <div style="color: var(--text-muted); font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem;">Cleared Vectors</div>
+                    <div class="font-display" style="font-size: 3rem; font-weight: 800; color: var(--accent); line-height: 1;">{{ \App\Models\Product::count() - $products->count() - $counterfeitRisk->count() }}</div>
+                </div>
+                <div style="width: 48px; height: 48px; background: rgba(16,185,129,0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--accent); font-size: 1.5rem;">
+                    <i class="ph-fill ph-shield-check"></i>
                 </div>
             </div>
+            <div style="margin-top: 1rem; font-size: 0.9rem; color: var(--text-muted);">Normal pricing parameters established</div>
         </div>
     </div>
 
-    <!-- Overpriced GeM Listings -->
-    <div class="mb-4">
-        <div class="section-title">
-            <div class="icon" style="background:linear-gradient(135deg,var(--danger),#c0392b);">⚠️</div>
-            Overpriced GeM Listings (>30% above market average)
-        </div>
-
+    <!-- Data Table 1: Overpriced -->
+    <div class="mb-8">
+        <h2 class="font-display mb-4" style="font-size: 1.5rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
+            <i class="ph-fill ph-trend-up" style="color: var(--danger);"></i> Severe Markup Detected (>30% Delta)
+        </h2>
+        
         @if($products->count() > 0)
-        <div class="card">
-            <div class="table-wrap">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Product</th>
-                            <th>GeM Price</th>
-                            <th>Market Avg</th>
-                            <th>Overprice %</th>
-                            <th>Potential Overcharge</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($products as $p)
-                        @php
-                            $marketPrices = array_filter([$p->amazon_price, $p->flipkart_price]);
-                            $marketAvg    = count($marketPrices) ? array_sum($marketPrices) / count($marketPrices) : 0;
-                            $pct          = $marketAvg > 0 ? round((($p->gem_price / $marketAvg) - 1) * 100, 1) : 0;
-                            $overcharge   = $p->gem_price - $marketAvg;
-                        @endphp
-                        <tr>
-                            <td>
-                                <div style="font-weight:600;font-size:0.88rem;">{{ Str::limit($p->name, 50) }}</div>
-                                <div class="text-xs text-muted">{{ $p->category }} · {{ $p->brand }}</div>
-                            </td>
-                            <td>
-                                <span style="color:var(--gem);font-weight:700;">₹{{ number_format($p->gem_price, 0) }}</span>
-                            </td>
-                            <td>
-                                <span style="color:var(--success);font-weight:600;">₹{{ number_format($marketAvg, 0) }}</span>
-                            </td>
-                            <td>
-                                <span style="background:rgba(239,68,68,0.15);color:var(--danger);padding:0.2rem 0.6rem;border-radius:50px;font-size:0.8rem;font-weight:700;">
-                                    +{{ $pct }}%
-                                </span>
-                            </td>
-                            <td>
-                                <span style="color:var(--danger);font-weight:700;">₹{{ number_format($overcharge, 0) }}/unit</span>
-                            </td>
-                            <td>
-                                <a href="{{ route('product.show', $p) }}" class="btn btn-ghost btn-sm">View →</a>
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
+        <div class="card" style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                <thead>
+                    <tr style="border-bottom: 1px solid var(--glass-border); background: rgba(255,255,255,0.02);">
+                        <th style="padding: 1.2rem 1.5rem; color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px;">Asset Identity</th>
+                        <th style="padding: 1.2rem 1.5rem; color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px;">GeM Vector</th>
+                        <th style="padding: 1.2rem 1.5rem; color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px;">Market Baseline</th>
+                        <th style="padding: 1.2rem 1.5rem; color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px;">Delta Risk</th>
+                        <th style="padding: 1.2rem 1.5rem; color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px;">Excess Cost</th>
+                        <th style="padding: 1.2rem 1.5rem;"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($products as $p)
+                    @php
+                        $marketPrices = array_filter([$p->amazon_price, $p->flipkart_price]);
+                        $marketAvg    = count($marketPrices) ? array_sum($marketPrices) / count($marketPrices) : 0;
+                        $pct          = $marketAvg > 0 ? round((($p->gem_price / $marketAvg) - 1) * 100, 1) : 0;
+                        $overcharge   = $p->gem_price - $marketAvg;
+                    @endphp
+                    <tr style="border-bottom: 1px solid var(--glass-border); transition: var(--transition);" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
+                        <td style="padding: 1rem 1.5rem;">
+                            <div style="font-weight: 600; font-size: 0.95rem; color: white; margin-bottom: 0.2rem;">{{ Str::limit($p->name, 40) }}</div>
+                            <div style="font-size: 0.75rem; color: var(--text-muted);">{{ $p->brand }} · {{ $p->category }}</div>
+                        </td>
+                        <td style="padding: 1rem 1.5rem; font-weight: 700; color: var(--gem);">₹{{ number_format($p->gem_price, 0) }}</td>
+                        <td style="padding: 1rem 1.5rem; font-weight: 600; color: var(--accent);">₹{{ number_format($marketAvg, 0) }}</td>
+                        <td style="padding: 1rem 1.5rem;">
+                            <span style="background: rgba(239,68,68,0.15); color: var(--danger); padding: 0.3rem 0.8rem; border-radius: 50px; font-size: 0.85rem; font-weight: 700; border: 1px solid rgba(239,68,68,0.3);">
+                                <i class="ph ph-arrow-up"></i> {{ $pct }}%
+                            </span>
+                        </td>
+                        <td style="padding: 1rem 1.5rem; font-weight: 700; color: var(--danger);">₹{{ number_format($overcharge, 0) }}</td>
+                        <td style="padding: 1rem 1.5rem; text-align: right;">
+                            <a href="{{ route('product.show', $p) }}" class="btn btn-ghost" style="padding: 0.5rem 1rem; font-size: 0.85rem;">Inspect</a>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
         @else
-        <div style="background:rgba(34,197,94,0.06);border:1px solid rgba(34,197,94,0.25);border-radius:var(--radius);padding:1.5rem;text-align:center;">
-            <div style="font-size:2rem;margin-bottom:0.5rem;">✅</div>
-            <p style="color:var(--success);font-weight:600;">No overpriced GeM listings detected!</p>
+        <div class="card" style="padding: 3rem; text-align: center; border: 1px dashed rgba(16,185,129,0.3); background: rgba(16,185,129,0.02);">
+            <i class="ph-fill ph-check-circle" style="font-size: 3rem; color: var(--accent); margin-bottom: 1rem;"></i>
+            <h3 class="font-display" style="font-size: 1.25rem; font-weight: 600;">System Nominal</h3>
+            <p style="color: var(--text-muted);">No significant markup anomalies detected across indexed vectors.</p>
         </div>
         @endif
     </div>
 
-    <!-- Counterfeit Risk -->
-    <div class="mb-4">
-        <div class="section-title">
-            <div class="icon" style="background:linear-gradient(135deg,var(--warning),#c87f00);">🕵️</div>
-            Potential Counterfeit Risk (Suspiciously Low Amazon Price)
-        </div>
-
-        @if($counterfeitRisk->count() > 0)
-        <div class="card">
-            <div class="table-wrap">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Product</th>
-                            <th>Amazon Price</th>
-                            <th>Other Platforms Avg</th>
-                            <th>Discount %</th>
-                            <th>Risk Level</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($counterfeitRisk as $p)
-                        @php
-                            $otherPrices = array_filter([$p->gem_price, $p->flipkart_price]);
-                            $otherAvg    = count($otherPrices) ? array_sum($otherPrices) / count($otherPrices) : 0;
-                            $discPct     = $otherAvg > 0 ? round((1 - ($p->amazon_price / $otherAvg)) * 100, 1) : 0;
-                        @endphp
-                        <tr>
-                            <td>
-                                <div style="font-weight:600;font-size:0.88rem;">{{ Str::limit($p->name, 50) }}</div>
-                                <div class="text-xs text-muted">{{ $p->category }}</div>
-                            </td>
-                            <td>
-                                <span style="color:var(--amazon);font-weight:700;">₹{{ number_format($p->amazon_price, 0) }}</span>
-                            </td>
-                            <td>
-                                <span style="font-weight:600;">₹{{ number_format($otherAvg, 0) }}</span>
-                            </td>
-                            <td>
-                                <span style="background:rgba(245,158,11,0.15);color:var(--warning);padding:0.2rem 0.6rem;border-radius:50px;font-size:0.8rem;font-weight:700;">
-                                    -{{ $discPct }}%
-                                </span>
-                            </td>
-                            <td>
-                                @if($discPct > 50)
-                                <span class="badge badge-danger">🔴 High Risk</span>
-                                @else
-                                <span class="badge" style="background:rgba(245,158,11,0.1);color:var(--warning);border:1px solid rgba(245,158,11,0.3);">🟡 Medium</span>
-                                @endif
-                            </td>
-                            <td>
-                                <a href="{{ route('product.show', $p) }}" class="btn btn-ghost btn-sm">View →</a>
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        @else
-        <div style="background:rgba(34,197,94,0.06);border:1px solid rgba(34,197,94,0.25);border-radius:var(--radius);padding:1.5rem;text-align:center;">
-            <div style="font-size:2rem;margin-bottom:0.5rem;">✅</div>
-            <p style="color:var(--success);font-weight:600;">No suspicious pricing patterns detected!</p>
-        </div>
-        @endif
-    </div>
-
-    <!-- How it works -->
-    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:2rem;">
-        <h2 style="font-family:'Outfit',sans-serif;font-size:1.2rem;font-weight:700;margin-bottom:1rem;">🧠 How Anomaly Detection Works</h2>
-        <div class="grid-2">
+    <!-- Knowledge Base -->
+    <div class="card" style="padding: 2.5rem; background: rgba(0,0,0,0.3);">
+        <h3 class="font-display" style="font-size: 1.2rem; font-weight: 700; margin-bottom: 1.5rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 1rem;">
+            <i class="ph-fill ph-cpu"></i> Neural Analysis Metrics
+        </h3>
+        <div class="grid grid-2">
             <div>
-                <h3 style="font-size:0.9rem;font-weight:700;color:var(--danger);margin-bottom:0.4rem;">⚠️ GeM Overpricing Flag</h3>
-                <p class="text-sm text-muted">If a GeM listing is priced <strong style="color:var(--text)">more than 30% above the average commercial price</strong> (Amazon + Flipkart), it's flagged as a potential overpricing case. This helps procurement officers avoid paying a premium without justification.</p>
+                <h4 style="font-size: 0.95rem; font-weight: 700; color: #A78BFA; margin-bottom: 0.5rem;">GeM Markup Heuristics</h4>
+                <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.6;">Algorithms flag SKUs where GeM listed prices violate a 30% upper-bound threshold relative to the moving average of commercial counterparts (Amazon/Flipkart). This identifies predatory pricing patterns for government buyers.</p>
             </div>
             <div>
-                <h3 style="font-size:0.9rem;font-weight:700;color:var(--warning);margin-bottom:0.4rem;">🕵️ Counterfeit Risk Flag</h3>
-                <p class="text-sm text-muted">If a product on Amazon is priced <strong style="color:var(--text)">more than 40% below</strong> the average of GeM + Flipkart prices, it may indicate a counterfeit or unauthorized listing. Buyers should verify seller credentials before purchasing.</p>
+                <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--warning); margin-bottom: 0.5rem;">Counterfeit Probability</h4>
+                <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.6;">Commercial listings exhibiting a >40% negative deviation from median network pricing trigger a verification flag. This delta often correlates with gray-market hardware or unauthorized distributor channels.</p>
             </div>
         </div>
     </div>
