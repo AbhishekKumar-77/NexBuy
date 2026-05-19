@@ -332,6 +332,33 @@ class ProductController extends Controller
                 ['name'=>'JK Copier A4 75 GSM Paper (5 Reams)','brand'=>'JK Paper','cat'=>'Stationery','img'=>'https://images.unsplash.com/photo-1531346878377-a5be20888e57?w=400','base'=>1550,'specs'=>['Size'=>'A4','GSM'=>'75','Sheets'=>'500 per ream','Pack'=>'5 Reams','Brightness'=>'94%']],
                 ['name'=>'Century Pulp A4 70 GSM Copier Paper (10 Reams)','brand'=>'Century','cat'=>'Stationery','img'=>'https://images.unsplash.com/photo-1531346878377-a5be20888e57?w=400','base'=>2800,'specs'=>['Size'=>'A4','GSM'=>'70','Sheets'=>'500 per ream','Pack'=>'10 Reams']],
             ],
+            'mixer' => [
+                ['name'=>'Bajaj Rex 500W Mixer Grinder (3 Jars)','brand'=>'Bajaj','cat'=>'Kitchen Appliances','img'=>'https://images.unsplash.com/photo-1585515320310-259814833e62?w=400','base'=>2200,'specs'=>['Wattage'=>'500W','Jars'=>'3 (Liquidizing, Dry Grinding, Chutney)','RPM'=>'18000','Motor'=>'Powerful Copper','BIS'=>'IS 4250']],
+                ['name'=>'Philips HL7756/00 750W Mixer Grinder','brand'=>'Philips','cat'=>'Kitchen Appliances','img'=>'https://images.unsplash.com/photo-1585515320310-259814833e62?w=400','base'=>3500,'specs'=>['Wattage'=>'750W','Jars'=>'3 Stainless Steel','Blade'=>'Advanced ProBlend','Motor'=>'Turbo Motor','Warranty'=>'2 Years']],
+                ['name'=>'Prestige Iris 750W Mixer Grinder (4 Jars)','brand'=>'Prestige','cat'=>'Kitchen Appliances','img'=>'https://images.unsplash.com/photo-1585515320310-259814833e62?w=400','base'=>3200,'specs'=>['Wattage'=>'750W','Jars'=>'4 (Wet, Dry, Chutney, Juicer)','Body'=>'ABS Plastic','Speed'=>'3 Speed + Pulse']],
+            ],
+            'phone' => [
+                ['name'=>'Samsung Galaxy A15 (6GB, 128GB) 5G','brand'=>'Samsung','cat'=>'Mobiles','img'=>'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400','base'=>14000,'specs'=>['Processor'=>'MediaTek Dimensity 6100+','RAM'=>'6GB','Storage'=>'128GB','Display'=>'6.5" Super AMOLED','Battery'=>'5000mAh']],
+                ['name'=>'Redmi Note 13 Pro (8GB, 256GB)','brand'=>'Xiaomi','cat'=>'Mobiles','img'=>'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400','base'=>18000,'specs'=>['Processor'=>'Snapdragon 7s Gen 2','RAM'=>'8GB','Storage'=>'256GB','Camera'=>'200MP OIS','Display'=>'6.67" AMOLED 120Hz']],
+                ['name'=>'Lava Blaze 2 5G (4GB, 128GB)','brand'=>'Lava','cat'=>'Mobiles','img'=>'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400','base'=>9500,'specs'=>['Processor'=>'MediaTek Dimensity 6020','RAM'=>'4GB','Storage'=>'128GB','Display'=>'6.5" HD+','Make in India'=>'Yes']],
+            ],
+            'cctv' => [
+                ['name'=>'CP Plus 2MP HD CCTV Camera Kit (4 Channel)','brand'=>'CP Plus','cat'=>'Security & Surveillance','img'=>'https://images.unsplash.com/photo-1557597774-9d273605dfa9?w=400','base'=>8500,'specs'=>['Resolution'=>'2MP Full HD','Channels'=>'4','Night Vision'=>'20m IR','Storage'=>'1TB HDD','Type'=>'Dome + Bullet']],
+                ['name'=>'Hikvision 4MP IP Camera System (8 Channel)','brand'=>'Hikvision','cat'=>'Security & Surveillance','img'=>'https://images.unsplash.com/photo-1557597774-9d273605dfa9?w=400','base'=>22000,'specs'=>['Resolution'=>'4MP Super HD','Channels'=>'8','Night Vision'=>'30m EXIR','NVR'=>'PoE','Compression'=>'H.265+']],
+            ],
+            'water' => [
+                ['name'=>'Kent Grand Plus 9L RO+UV+UF Water Purifier','brand'=>'Kent','cat'=>'Water & Sanitation','img'=>'https://images.unsplash.com/photo-1564419320461-6eb9c3cda61a?w=400','base'=>15500,'specs'=>['Capacity'=>'9 Litres','Technology'=>'RO+UV+UF+TDS Control','Purification'=>'20L/hr','BIS'=>'IS 16240','Warranty'=>'1 Year + 3 Year Service']],
+                ['name'=>'Livpure Glo Star 7L RO+UV Purifier','brand'=>'Livpure','cat'=>'Water & Sanitation','img'=>'https://images.unsplash.com/photo-1564419320461-6eb9c3cda61a?w=400','base'=>8900,'specs'=>['Capacity'=>'7 Litres','Technology'=>'RO+UV+Mineraliser','Purification'=>'15L/hr','Filter Stages'=>'7']],
+            ],
+            'ups' => [
+                ['name'=>'APC Back-UPS 1100VA / 660W','brand'=>'APC','cat'=>'IT Equipment','img'=>'https://images.unsplash.com/photo-1621600411688-4be93cd68504?w=400','base'=>6500,'specs'=>['Capacity'=>'1100VA / 660W','Outlets'=>'4 Battery + 2 Surge','Backup'=>'~25 min at half load','Type'=>'Line Interactive']],
+                ['name'=>'Luminous Zelio+ 1100VA Pure Sine Wave UPS','brand'=>'Luminous','cat'=>'IT Equipment','img'=>'https://images.unsplash.com/photo-1621600411688-4be93cd68504?w=400','base'=>4800,'specs'=>['Capacity'=>'1100VA','Wave'=>'Pure Sine Wave','Battery'=>'12V','Charging'=>'Intelligent MCU','Make in India'=>'Yes']],
+            ],
+            'fan' => [
+                ['name'=>'Havells Pacer 1200mm Ceiling Fan','brand'=>'Havells','cat'=>'Electrical & Power','img'=>'https://images.unsplash.com/photo-1581783898377-1c85bf937427?w=400','base'=>1800,'specs'=>['Sweep'=>'1200mm','Speed'=>'390 RPM','Motor'=>'Copper Wound','BIS'=>'IS 374','Star Rating'=>'2 Star']],
+                ['name'=>'Orient Electric Apex-FX 1200mm Ceiling Fan','brand'=>'Orient','cat'=>'Electrical & Power','img'=>'https://images.unsplash.com/photo-1581783898377-1c85bf937427?w=400','base'=>1500,'specs'=>['Sweep'=>'1200mm','Speed'=>'370 RPM','Blades'=>'Aerodynamic','Power'=>'75W','Warranty'=>'2 Years']],
+                ['name'=>'Crompton Hill Briz 48" High Speed Ceiling Fan','brand'=>'Crompton','cat'=>'Electrical & Power','img'=>'https://images.unsplash.com/photo-1581783898377-1c85bf937427?w=400','base'=>1350,'specs'=>['Sweep'=>'1200mm','Speed'=>'370 RPM','Motor'=>'Aluminium Body','Air Delivery'=>'230 CMM']],
+            ],
         ];
 
         // Find the best matching category from keywords
@@ -348,17 +375,21 @@ class ProductController extends Controller
         // Broad keyword fallback mapping
         if (!$matched) {
             $keywordMap = [
-                'computer' => 'laptop', 'notebook' => 'laptop', 'pc' => 'laptop', 'macbook' => 'laptop',
+                'computer' => 'laptop', 'notebook' => 'laptop', 'pc' => 'laptop', 'macbook' => 'laptop', 'chromebook' => 'laptop',
                 'desk' => 'chair', 'table' => 'chair', 'furniture' => 'chair', 'seat' => 'chair',
                 'toner' => 'printer', 'ink' => 'printer', 'copier' => 'printer', 'scanner' => 'printer',
-                'screen' => 'monitor', 'display' => 'monitor', 'lcd' => 'monitor', 'led' => 'monitor',
-                'phone' => 'laptop', 'mobile' => 'laptop', 'tablet' => 'laptop', 'ipad' => 'laptop',
-                'clean' => 'sanitizer', 'soap' => 'sanitizer', 'mask' => 'sanitizer', 'wash' => 'sanitizer',
-                'pen' => 'paper', 'notebook' => 'paper', 'stationery' => 'paper', 'register' => 'paper',
-                'cooling' => 'ac', 'fan' => 'ac', 'air' => 'ac', 'cooler' => 'ac',
+                'screen' => 'monitor', 'display' => 'monitor', 'lcd' => 'monitor',
+                'mobile' => 'phone', 'smartphone' => 'phone', 'iphone' => 'phone', 'tablet' => 'phone', 'ipad' => 'phone', 'redmi' => 'phone', 'samsung' => 'phone',
+                'clean' => 'sanitizer', 'soap' => 'sanitizer', 'mask' => 'sanitizer', 'disinfect' => 'sanitizer',
+                'pen' => 'paper', 'stationery' => 'paper', 'register' => 'paper', 'file' => 'paper',
+                'cooling' => 'ac', 'air conditioner' => 'ac', 'cooler' => 'ac', 'split' => 'ac', 'window ac' => 'ac',
                 'beam' => 'projector', 'presentation' => 'projector',
-                'ups' => 'ac', 'inverter' => 'ac', 'battery' => 'ac',
-                'iphone' => 'laptop', 'samsung' => 'laptop', 'dell' => 'laptop', 'hp' => 'laptop',
+                'inverter' => 'ups', 'battery' => 'ups', 'power backup' => 'ups',
+                'grinder' => 'mixer', 'blender' => 'mixer', 'juicer' => 'mixer', 'kitchen' => 'mixer',
+                'camera' => 'cctv', 'surveillance' => 'cctv', 'security' => 'cctv', 'dvr' => 'cctv', 'nvr' => 'cctv',
+                'purifier' => 'water', 'ro' => 'water', 'filter' => 'water', 'drinking' => 'water',
+                'ceiling' => 'fan', 'exhaust' => 'fan', 'pedestal' => 'fan', 'havells' => 'fan', 'crompton' => 'fan', 'orient' => 'fan',
+                'dell' => 'laptop', 'hp' => 'laptop', 'lenovo' => 'laptop',
             ];
 
             foreach ($keywordMap as $kw => $catKey) {
@@ -414,10 +445,11 @@ class ProductController extends Controller
                 }
             } catch (\Exception $e) { /* fallback below */ }
 
-            // Final fallback — generate generic but realistic product
+            // Final fallback — use a clean product placeholder, NOT random images
+            $placeholderImg = 'https://placehold.co/400x300/1a1a2e/67E8F9?text=' . urlencode(ucwords($query));
             $matched = [
-                ['name' => ucwords($query) . ' (Standard Model)', 'brand' => 'Generic India', 'cat' => 'General Supplies', 'img' => 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400', 'base' => rand(500, 25000), 'specs' => ['Type' => ucwords($query), 'Origin' => 'India', 'Warranty' => '1 Year', 'Condition' => 'New']],
-                ['name' => ucwords($query) . ' (Premium Model)', 'brand' => 'BrandX India', 'cat' => 'General Supplies', 'img' => 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400', 'base' => rand(1000, 35000), 'specs' => ['Type' => ucwords($query), 'Origin' => 'India', 'Warranty' => '2 Years', 'Grade' => 'Commercial']],
+                ['name' => ucwords($query) . ' (Standard Grade)', 'brand' => 'Indian Manufacturer', 'cat' => 'General Supplies', 'img' => $placeholderImg, 'base' => rand(800, 15000), 'specs' => ['Type' => ucwords($query), 'Origin' => 'India', 'Warranty' => '1 Year', 'Condition' => 'New', 'BIS Certified' => 'Yes']],
+                ['name' => ucwords($query) . ' (Premium Grade)', 'brand' => 'Govt Approved Vendor', 'cat' => 'General Supplies', 'img' => $placeholderImg, 'base' => rand(2000, 25000), 'specs' => ['Type' => ucwords($query), 'Origin' => 'India', 'Warranty' => '2 Years', 'Grade' => 'Commercial / Govt']],
             ];
         }
 
